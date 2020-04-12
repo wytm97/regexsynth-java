@@ -10,7 +10,7 @@ buildscript {
 plugins {
     id 'java-library'
     id 'io.codearte.nexus-staging' version '0.11.0'
-    id 'jacoco'
+//    id 'jacoco'
 }
 
 apply plugin: 'com.bmuschko.nexus'
@@ -78,3 +78,12 @@ nexusStaging {
     packageGroup = "dev.yasint.regexsynth" // optional if packageGroup == project.getGroup()
     // stagingProfileId = "yourStagingProfileId" // when not defined will be got from server using "packageGroup"
 }
+
+//jacocoTestReport {
+//    reports {
+//        xml.enabled = true
+//        html.enabled = true
+//    }
+//}
+//
+//check.dependsOn jacocoTestReport
