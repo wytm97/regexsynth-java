@@ -12,6 +12,8 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+# must never upload this
+gradle.properties
 
 # Generated files
 .idea/**/contentModel.xml
