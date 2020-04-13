@@ -67,7 +67,6 @@ String expression = regexp(
                 captureGroup(leadingZero(integerRange(1, 31))) // Day - group 2
         )
 );
-
 ```
 
 ```reStructuredText
@@ -127,7 +126,7 @@ Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
 
 # **Architecture**
 
-RegexSynth has a simple yet an elegant architecture where all the [regular expression constructs](https://github.com/google/re2/wiki/Syntax) share the same functional interface `Expression`. It allows us to declare and combine any type of expression and wrap expressions on top of expressions. This way it produces an explicit function driven [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) for the regex, which is then transpiled to a valid regular expression.
+RegexSynth has a simple yet an elegant architecture where all the [regular expression constructs](https://github.com/google/re2/wiki/Syntax) share the same functional interface `Expression`. It allows us to declare and combine any type of expression and wrap expressions on top of expressions. This produces an explicit function driven [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) for the regex, which is then transpiled to a RE2 interpretable regular expression.
 
 ```java
 @FunctionalInterface
@@ -143,11 +142,11 @@ public interface Expression {
 }
 ```
 
-It is possible to do [contextual analysis](https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)) directly inside defined [lambda functions](https://en.wikipedia.org/wiki/Anonymous_function) to validate the structure of the created regular expression. For example, we can use object decomposition like `interface BoundaryMatcher extends Expression { }` to *typecheck* or *errorcheck* syntax similar to `\b\b\b` (less likely or invalid syntax) but, it is beyond this project's current scope and research (Maybe in a future release we will do this) and, it is a more object oriented approach.
+It is possible to do [contextual analysis](https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)) directly inside defined [lambda functions](https://en.wikipedia.org/wiki/Anonymous_function) to validate the structure of the created regular expression. For example, we can use object decomposition like `interface BoundaryMatcher extends Expression { }` to check syntactical errors similar to `\b\b\b` (less likely or invalid syntax) but, it is beyond this project's current scope and research (Maybe in a future release we will do this) and, it is a more object oriented approach.
 
 # **Reusing Expressions**
 
-RegexSynth allows you to extend the functionality to create reusable expressions. For example, `RegexSet`and `IntegerRange`are reusable components inside regexsynth. Likewise you can define your own expressions and re-use them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
+RegexSynth allows you to define custom expressions to create reusable expressions. For example, `RegexSet ` and `IntegerRange` are reusable components inside regexsynth. Likewise you can define your own expressions and reuse them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
 
 ```java
 import java.time.Year;
@@ -190,16 +189,15 @@ public static void main(String[] args) {
 
 # **Future Work**
 
-Trie to Acyclic tree 
+// TODO
 
 # **Documentation**
 
-You can find the library documentation on this Wiki.
-
-
+You can find the library documentation on this github's [Wiki](https://github.com/wytm97/regexsynth-java/wiki/Documentation).
 
 # **Other Implmentations**
 
+// TODO
 
 
 
@@ -216,153 +214,6 @@ You can find the library documentation on this Wiki.
 
 
 
-
-
-
-
-# Documentation
-
-## Boundary Matchers (Anchors)
-
-|       Description       | Regex Construct |        RegexSynth Function         |
-| :---------------------: | :-------------: | :--------------------------------: |
-| The beginning of a line |       `^`       |          `startOfLine()`           |
-|    The end of a line    |       `$`       |        `endOfLine(Boolean)`        |
-|  At beginning of text   |      `\A`       |          `startOfText()`           |
-|     At end of text      |      `\z`       |           `endOfText()`            |
-|     A word boundary     |      `\b`       |          `wordBoundary()`          |
-|   A non-word boundary   |      `\B`       |        `nonWordBoundary()`         |
-|       Line match        |     `^...$`     |  `exactLineMatch(Expression...)`   |
-|   Exact word boundary   |    `\b...\b`    | `exactWordBoundary(Expression...)` |
-
-
-
-## Character Classes
-
-#### Regular Expression Sets `[...]`
-
-|                         Description                          | Regex Construct |                     RegexSynth Function                      |
-| :----------------------------------------------------------: | :-------------: | :----------------------------------------------------------: |
-|                `a`, `d` or `f` (simple class)                |     `[adf]`     |                  `simpleSet("a", "d", "f")`                  |
-|            `a`, `d` or `f` (negated simple class)            |    `[^adf]`     |             `negated(simpleSet("a", "d", "f"))`              |
-| `a` through `z` or `A` through `Z`, inclusive (ranged class) |   `[A-Za-z]`    |       `rangedSet("a", "z").union(rangedSet("A", "Z"))`       |
-| `a` through `d` or `m` through `p`, inclusive (ranged class) |   `[a-dm-p]`    |       `rangedSet("a", "d").union(rangedSet("m", "p"))`       |
-|       `a` to `z` with `d`, `e`, or `f` (intersection)        |     `[d-f]`     | `rangedSet("a", "z").intersection(simpleSet("d", "e", "f"))` |
-|        `a` to `z`, except for `b` to `c` (difference)        |    `[ad-z]`     |    `rangedSet("a", "z").difference(rangedSet("b", "c"))`     |
-
-RegexSynth supports `union`, `intersection`, and `difference` on regular expression sets as shown above. You can use either one of those functions to create a set expression and it will return a instance of a `RegexSet` to do above set operations.
-
-###### Creating Set Range Expressions: -
-
-```java
-rangedSet(String from, String to); // Create from string literals (bmp or astral)
-rangedSet(int codepointA, int codepointB); // or from unicode codepoints
-```
-
-###### Creating Simple Set Expressions: -
-
-```java
-simpleSet(String... characters); // Create from string literals (bmp or astral) 
-simpleSet(int... codepoints); // or from unicode codepoints
-```
-
-###### Negating Set Expressions: -
-
-```java
-negated(RegexSet) // Negates a given set expression
-```
-
-###### Unicode Scripts Inside Set Expressions: -
-
-```java
-// Include a unicode script class into a set expression by providing
-// the script name and negated property. (false for non-negated)
-// also, you can chain withUnicodeClass(..) method multiple times
-simpleSet(".").withUnicodeClass(UnicodeScript.ARABIC, false); // [.\p{Arabic}]
-```
-
-#### Single Characters & Literals
-
-|                         Description                          |        Regex Construct         |          RegexSynth Function           |
-| :----------------------------------------------------------: | :----------------------------: | :------------------------------------: |
-| Any character, possibly including newline (if `DOTALL` flag is on) |              `.`               |              `anything()`              |
-|      Literal character (matches any charater literally)      |          `http:\/\/`           |           `literal(String)`            |
-|              Quoted literals (strict literals)               |           `\Q...\E`            |        `quotedLiteral(String)`         |
-|                    Unicode script blocks                     | `\p{Sinhala}` or `\P{Sinhala}` | `unicodeClass(UnicodeScript, Boolean)` |
-
-#### Escape Sequences
-
-By default RegexSynth creates a set expression for below listed sequences. This is because these sequences are valid constructs inside a regular expression set. If you want to include one of these sequences into a set expression simply do a `union` operation with the source set. However, if you only use this as a single element, the resulting expression won't create a set, instead it will simply append the regex construct.
-
-|    Character    | Regex Construct | RegexSynth Function |
-| :-------------: | :-------------: | :-----------------: |
-|    Backslash    |      `\\`       |    `backslash()`    |
-|  Double quotes  |      `\"`       |  `doubleQuotes()`   |
-|  Single quote   |      `\'`       |   `singleQuote()`   |
-|    Backtick     |     `` ` ``     |    `backtick()`     |
-|      Bell       | `\007` or `\a`  |      `bell()`       |
-|    Form feed    | `\014` or `\f`  |    `formfeed()`     |
-| Horizontal tab  | `\001` or `\t`  |  `horizontalTab()`  |
-|  Vertical tab   | `\013` or `\v`  |   `verticalTab()`   |
-|    Linebreak    | `\012` or `\n`  |    `linebreak()`    |
-| Carriage return | `\015` or `\r`  | `carriageReturn()`  |
-
-#### POSIX Character Classes
-
-RegexSynth provides all the standard POSIX charclasses to use in your expressions. But more importantly all of the listed classes uses `RegexSet` as the default implementation and when you combine below classes it can optimize the set expression.
-
-|          Class Description          |        Regex Construct        | RegexSynth Function |
-| :---------------------------------: | :---------------------------: | :-----------------: |
-|   A lowecase alphabetic character   |            `[a-z]`            |    `lowercase()`    |
-|  An uppercase alphabetic character  |            `[A-Z]`            |    `uppercase()`    |
-|     ASCII charset `0` to `127`      |         `[\x00-\x7F]`         |      `ascii()`      |
-| ASCII extended charset `0` to `255` |         `[\x00-\xFF]`         |     `ascii2()`      |
-|       An alphabetic character       |          `[A-Za-z]`           |   `alphabetic()`    |
-|         **A decimal digit**         |        `[0-9]` or `\d`        |      `digit()`      |
-|       **Not a decimal digit**       |       `[^0-9]` or `\D`        |    `notDigit()`     |
-|      An alphanumeric character      |         `[0-9A-Za-z]`         |  `alphanumeric()`   |
-|       A punctuation character       |     ``[!-\\/:-@[-`{-~]``      |   `punctuation()`   |
-|         A visible character         | ``[!-\\/:-@[-`{-~0-9A-Za-z]`` |    `graphical()`    |
-|        A printable character        |          `[!-~\x20]`          |    `printable()`    |
-| A space or a tab (blank characters) |            `[ \t]`            |      `blank()`      |
-|         A hexadecimal digit         |         `[0-9a-fA-F]`         |    `hexDigit()`     |
-|     **A whitespace character**      |   `[ \t\n\x0B\f\r]` or `\s`   |   `whiteSpace()`    |
-|   **Not a whitespace character**    |  `[^ \t\n\x0B\f\r]` or `\S`   |  `notWhiteSpace()`  |
-|        **A word character**         |    `[0-9A-Za-z_]` or `\w`     |      `word()`       |
-|      **Not a word character**       |    `[^0-9A-Za-z_]` or `\W`    |     `notWord()`     |
-
-
-
-## Composite Operators
-
-RegexSynth has dedicated composite functions for regex `concatenation` and `alternation`. As a implementation detail string alternation has optimizations where it uses a [trie](https://en.wikipedia.org/wiki/Trie) to detect common prefixes. Alternation results are wrapped in a non capturing group avoid breaking the surrounding expression.
-
-|        Operator Description        | Regex Construct |                     RegexSynth Function                      |
-| :--------------------------------: | :-------------: | :----------------------------------------------------------: |
-| Concatenation, `a` followed by `b` |      `ab`       | `concat(Expression a, Expression b)` or `concat(Expression...)` |
-|      Alternation, `a` or `b`       |      `a|b`      | `either(Expression a, Expression b)` or `either(Expression...)`or `either(String...)` or `either(Set<String>)` |
-
-
-
-## Quantifiers (Repetitions)
-
-| Description | Regex Construct | RegexSynth Function |
-| :---------: | :-------------: | :-----------------: |
-|             |                 |                     |
-|             |                 |                     |
-|             |                 |                     |
-|             |                 |                     |
-|             |                 |                     |
-
-
-
-
-
-#### Group Constructs
-
-Capture-groups (enclosed in `(...)` or `(?<name>...)`) allows you to extract results of a successful match. And Non-capture-groups (enclosed in `(?:...)`) allows you to group but not including them in the results.
-
-###### Capture Group `(...)`
 
 
 
