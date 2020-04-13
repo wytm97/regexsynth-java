@@ -10,15 +10,15 @@ buildscript {
 plugins {
     id 'java-library'
     id 'io.codearte.nexus-staging' version '0.11.0'
-//    id 'jacoco'
 }
 
 apply plugin: 'com.bmuschko.nexus'
+//apply plugin: 'jacoco'
 
 // Metadata Definition and Upload
 group = 'dev.yasint'
 archivesBaseName = "regexsynth"
-version = '1.0.1'
+version = '1.0.2'
 
 // RegexSynth supports Java 8
 sourceCompatibility = 1.8
@@ -80,10 +80,13 @@ nexusStaging {
 }
 
 //jacocoTestReport {
+//    group = "test-coverage-reporting"
+//    description = "Generate Jacoco coverage reports after running tests."
 //    reports {
 //        xml.enabled = true
 //        html.enabled = true
 //    }
+//    sourceDirectories = fileTree(dir: 'src/main/dev.yasint.regexsynth')
 //}
-//
+
 //check.dependsOn jacocoTestReport
