@@ -19,13 +19,13 @@ import static dev.yasint.regexsynth.core.Constructs.*;
  */
 public final class RegexSet implements Expression {
 
-    // Inside a set expression characters such as ^ ] / \ - are invalid and
-    // the expression will fail to compile. So, we check each element
-    // with this pattern to escape that are similar. However, ^ no need to escape
-    // if it's not initial (index 0) but we escape it anyways to make the code
-    // simpler to understand.
+    // Inside a set expression characters such as ^ ] / \ - " ' ` are invalid and
+    // the expression will fail to compile. So, we check each element with this
+    // pattern to escape that are similar. However, ^ no need to escape if it's
+    // not initial (index 0) but we escape it anyways to make the code simpler
+    // to understand.
     //
-    private static final Pattern SET_RESTRICTED = Pattern.compile("[\\^\\]\\\\\\/\\-]");
+    private static final Pattern SET_RESTRICTED = Pattern.compile("[\\^\\]\\\\\\/\\-\"'`]");
 
     private Set<String> unicodeClasses; // This is not affected to codepoints. i.e. \P{...} \p{...}
     private Set<Integer> codepoints; // This will be sorted in natural order
