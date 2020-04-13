@@ -39,7 +39,7 @@ public final class OperatorsTest {
                 )
         );
         Pattern pattern = RegexSynth.compile(regexp);
-        assertEquals(pattern.pattern(), "[0-9][!-\\/:-@[-`{-~]");
+        assertEquals(pattern.pattern(), "[0-9][!-\\/:-@[-\\`{-~]");
     }
 
 }

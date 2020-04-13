@@ -61,7 +61,7 @@ public final class CharClassesTest {
     @Test
     public void itShouldCreateCorrectPOSIXPunctCharClass() {
         final RegexSet set = punctuation();
-        assertEquals(set.toRegex().toString(), "[!-\\/:-@[-`{-~]");
+        assertEquals(set.toRegex().toString(), "[!-\\/:-@[-\\`{-~]");
     }
 
     @Test

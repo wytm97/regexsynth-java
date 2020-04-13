@@ -32,7 +32,7 @@ public final class GroupsTest {
                         )
                 )
         );
-        assertEquals(pattern.pattern(), "(?:[!-@[-`{-~])");
+        assertEquals(pattern.pattern(), "(?:[!-@[-\\`{-~])");
     }
 
     @Test
