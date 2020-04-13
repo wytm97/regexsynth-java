@@ -26,7 +26,7 @@ implementation 'dev.yasint:regexsynth:1.0.2' // Groovy DSL
 implementation("dev.yasint:regexsynth:1.0.2") // Kotlin DSL
 ```
 
-You can use the same artifact details in any build system compatible with the Maven Central repositories (e.g. sbt, Ivy, leiningen, bazel, purl, badge, buildr, grape). Visit the [Repo on Maven Central](https://search.maven.org/artifact/dev.yasint/regexsynth)
+You can use the same artifact details in any build system compatible with the Maven Central repositories (e.g. sbt, Ivy, leiningen, bazel, purl, badge, buildr, grape). Visit the [repo on Maven Central](https://search.maven.org/artifact/dev.yasint/regexsynth) .
 
 # **The Problem?**
 
@@ -38,14 +38,13 @@ Let's say you have been assgined to a new project and been asked to figure out w
 
 # **Declarative Syntax**
 
-RegexSynth provides a declarative syntax for regular expressions creation. You specify what you want and it builds the target regular expression with the correct syntax. This is not new, because there are many regex builder *libraries* and *tools* out there that can construct regular expressions without actually specifying the syntax. For example, [VerbalExpressions](https://github.com/VerbalExpressions), [JS-Regex](https://github.com/wyantb/js-regex), [XRegExp](http://xregexp.com/), [SimpleRegex](https://github.com/SimpleRegex) etc.
+RegexSynth provides a declarative syntax for regular expressions creation. You specify what you want and it builds the target regular expression with the correct syntax. This is not new, because there are many regex builder *libraries* and *tools* out there that can construct regular expressions without explicitly specifying the syntax. For example, [VerbalExpressions](https://github.com/VerbalExpressions), [JS-Regex](https://github.com/wyantb/js-regex), [SimpleRegex](https://github.com/SimpleRegex) etc.
 
 However, one of the major problem of these libraries is that they fail to structure the expression as it intended. The structure of a regular expression matters alot. If not handled correclty it can be a added complexity in your code. This is where RegexSynth comes into play. RegexSynth allows you to **destructure** your expression into partial expressions and then combine them to create a complete regular expression.
 
 ###### Example #1 (Compact Expression)
 
 ```java
-
 // Let's say we want to match dates like this format: 2019-Mar-15
 //
 // Requirement 1: Months as Abbreviation -> (Jan, Feb, Mar, etc...)
@@ -77,7 +76,7 @@ String expression = regexp(
 
 
 
-###### Example #1 (Partial Expression Segregation)
+###### Example #2 (Partial Expression Segregation)
 
 ```java
 
@@ -120,7 +119,6 @@ String expression = regexp(
 
 // Compile the expression. Will return a com.google.re2j.Pattern instance.
 Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
-
 ```
 
 ```reStructuredText
@@ -149,21 +147,23 @@ It is possible to do [contextual analysis](https://en.wikipedia.org/wiki/Semanti
 
 # **Reusing Expressions**
 
-RegexSynth allows you to create your own custom expressions to create reusable components. For example, `RegexSet`and `IntegerRange`are re-usable components inside regexsynth. Likewise you can define your own expressions and re-use them accross multiple pattern expressions. This way we can write more `clean` and `maintainable` regular expression codes.
+RegexSynth allows you to extend the functionality to create reusable expressions. For example, `RegexSet`and `IntegerRange`are reusable components inside regexsynth. Likewise you can define your own expressions and re-use them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
 
 ```java
-
 import java.time.Year;
 import dev.yasint.regexsynth.core.Expression;
 // import other nececessary lambda function literals
 
 public class ISODateFormat implements Expression {
+  
     private int startYear;
     private int endYear;
+  
     public ISODateFormat(int startYear, int endYear) {
         this.startYear = startYear;
         this.endYear = endYear;
     }
+  
     @Override
     public StringBuilder toRegex() {
         final Expression expression = nonCaptureGroup(
@@ -175,9 +175,10 @@ public class ISODateFormat implements Expression {
         );
         return expression.toRegex();
     }
+  
 }
 
-// Re-use the regex in multiple expressions.
+// Reuse the regex in multiple expressions.
 public static void main(String[] args) {
     final String expression = regexp(
             new ISODateFormat(2010, Year.now().getValue()),
@@ -185,7 +186,6 @@ public static void main(String[] args) {
             ...
     );
 }
-
 ```
 
 # **Future Work**
@@ -250,7 +250,7 @@ You can find the library documentation on this Wiki.
 |       `a` to `z` with `d`, `e`, or `f` (intersection)        |     `[d-f]`     | `rangedSet("a", "z").intersection(simpleSet("d", "e", "f"))` |
 |        `a` to `z`, except for `b` to `c` (difference)        |    `[ad-z]`     |    `rangedSet("a", "z").difference(rangedSet("b", "c"))`     |
 
-RegexSynth supports `union`, `intersection`, and `difference` on regular expression sets as shown above. You can use either one of those functions to create a set expression and it will return a instance of a `RegexSet` to do further set operations.
+RegexSynth supports `union`, `intersection`, and `difference` on regular expression sets as shown above. You can use either one of those functions to create a set expression and it will return a instance of a `RegexSet` to do above set operations.
 
 ###### Creating Set Range Expressions: -
 
@@ -288,13 +288,18 @@ simpleSet(".").withUnicodeClass(UnicodeScript.ARABIC, false); // [.\p{Arabic}]
 | Any character, possibly including newline (if `DOTALL` flag is on) |              `.`               |              `anything()`              |
 |      Literal character (matches any charater literally)      |          `http:\/\/`           |           `literal(String)`            |
 |              Quoted literals (strict literals)               |           `\Q...\E`            |        `quotedLiteral(String)`         |
-|                   Unicode script literals                    | `\p{Sinhala}` or `\P{Sinhala}` | `unicodeClass(UnicodeScript, Boolean)` |
+|                    Unicode script blocks                     | `\p{Sinhala}` or `\P{Sinhala}` | `unicodeClass(UnicodeScript, Boolean)` |
 
 #### Escape Sequences
+
+By default RegexSynth creates a set expression for below listed sequences. This is because these sequences are valid constructs inside a regular expression set. If you want to include one of these sequences into a set expression simply do a `union` operation with the source set. However, if you only use this as a single element, the resulting expression won't create a set, instead it will simply append the regex construct.
 
 |    Character    | Regex Construct | RegexSynth Function |
 | :-------------: | :-------------: | :-----------------: |
 |    Backslash    |      `\\`       |    `backslash()`    |
+|  Double quotes  |      `\"`       |  `doubleQuotes()`   |
+|  Single quote   |      `\'`       |   `singleQuote()`   |
+|    Backtick     |     `` ` ``     |    `backtick()`     |
 |      Bell       | `\007` or `\a`  |      `bell()`       |
 |    Form feed    | `\014` or `\f`  |    `formfeed()`     |
 | Horizontal tab  | `\001` or `\t`  |  `horizontalTab()`  |
@@ -304,42 +309,56 @@ simpleSet(".").withUnicodeClass(UnicodeScript.ARABIC, false); // [.\p{Arabic}]
 
 #### POSIX Character Classes
 
+RegexSynth provides all the standard POSIX charclasses to use in your expressions. But more importantly all of the listed classes uses `RegexSet` as the default implementation and when you combine below classes it can optimize the set expression.
+
 |          Class Description          |        Regex Construct        | RegexSynth Function |
 | :---------------------------------: | :---------------------------: | :-----------------: |
 |   A lowecase alphabetic character   |            `[a-z]`            |    `lowercase()`    |
 |  An uppercase alphabetic character  |            `[A-Z]`            |    `uppercase()`    |
-|     ASCII char set `0` to `127`     |         `[\x00-\x7F]`         |      `ascii()`      |
-|   ASCII extended set `0` to `255`   |         `[\x00-\xFF]`         |     `ascii2()`      |
+|     ASCII charset `0` to `127`      |         `[\x00-\x7F]`         |      `ascii()`      |
+| ASCII extended charset `0` to `255` |         `[\x00-\xFF]`         |     `ascii2()`      |
 |       An alphabetic character       |          `[A-Za-z]`           |   `alphabetic()`    |
-|           A decimal digit           |        `[0-9]` or `\d`        |      `digit()`      |
-|         Not a decimal digit         |       `[^0-9]` or `\D`        |    `notDigit()`     |
+|         **A decimal digit**         |        `[0-9]` or `\d`        |      `digit()`      |
+|       **Not a decimal digit**       |       `[^0-9]` or `\D`        |    `notDigit()`     |
 |      An alphanumeric character      |         `[0-9A-Za-z]`         |  `alphanumeric()`   |
 |       A punctuation character       |     ``[!-\\/:-@[-`{-~]``      |   `punctuation()`   |
 |         A visible character         | ``[!-\\/:-@[-`{-~0-9A-Za-z]`` |    `graphical()`    |
 |        A printable character        |          `[!-~\x20]`          |    `printable()`    |
 | A space or a tab (blank characters) |            `[ \t]`            |      `blank()`      |
 |         A hexadecimal digit         |         `[0-9a-fA-F]`         |    `hexDigit()`     |
-|       A whitespace character        |   `[ \t\n\x0B\f\r]` or `\s`   |   `whiteSpace()`    |
-|     Not a whitespace character      |  `[^ \t\n\x0B\f\r]` or `\S`   |  `notWhiteSpace()`  |
-|          A word character           |    `[0-9A-Za-z_]` or `\w`     |      `word()`       |
-|        Not a word character         |    `[^0-9A-Za-z_]` or `\W`    |     `notWord()`     |
+|     **A whitespace character**      |   `[ \t\n\x0B\f\r]` or `\s`   |   `whiteSpace()`    |
+|   **Not a whitespace character**    |  `[^ \t\n\x0B\f\r]` or `\S`   |  `notWhiteSpace()`  |
+|        **A word character**         |    `[0-9A-Za-z_]` or `\w`     |      `word()`       |
+|      **Not a word character**       |    `[^0-9A-Za-z_]` or `\W`    |     `notWord()`     |
 
 
 
 ## Composite Operators
 
-
+RegexSynth has dedicated composite functions for regex `concatenation` and `alternation`. As a implementation detail string alternation has optimizations where it uses a [trie](https://en.wikipedia.org/wiki/Trie) to detect common prefixes. Alternation results are wrapped in a non capturing group avoid breaking the surrounding expression.
 
 |        Operator Description        | Regex Construct |                     RegexSynth Function                      |
 | :--------------------------------: | :-------------: | :----------------------------------------------------------: |
 | Concatenation, `a` followed by `b` |      `ab`       | `concat(Expression a, Expression b)` or `concat(Expression...)` |
-|      Alternation, `a` or `b`       |      `a|b`      | `either(Expression a, Expression b)`<br /> or `either(Expression...)`<br />or `either(String...)` or `either(Set<String>)` |
+|      Alternation, `a` or `b`       |      `a|b`      | `either(Expression a, Expression b)` or `either(Expression...)`or `either(String...)` or `either(Set<String>)` |
 
 
 
 ## Quantifiers (Repetitions)
 
-### Group Constructs
+| Description | Regex Construct | RegexSynth Function |
+| :---------: | :-------------: | :-----------------: |
+|             |                 |                     |
+|             |                 |                     |
+|             |                 |                     |
+|             |                 |                     |
+|             |                 |                     |
+
+
+
+
+
+#### Group Constructs
 
 Capture-groups (enclosed in `(...)` or `(?<name>...)`) allows you to extract results of a successful match. And Non-capture-groups (enclosed in `(?:...)`) allows you to group but not including them in the results.
 

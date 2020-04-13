@@ -278,6 +278,18 @@ public final class CharClasses {
             return simpleSet("\\"); // \
         }
 
+        public static RegexSet doubleQuotes() {
+            return simpleSet("\""); // "
+        }
+
+        public static RegexSet singleQuote() {
+            return simpleSet("'"); // '
+        }
+
+        public static RegexSet backtick() {
+            return simpleSet("`"); // `
+        }
+
         public static RegexSet bell() {
             return simpleSet(0x07); // \a
         }
