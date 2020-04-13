@@ -12,18 +12,18 @@ If you're using `Maven`, you can use the following snippet in your `pom.xml` fil
 <dependency>
   <groupId>dev.yasint</groupId>
   <artifactId>regexsynth</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
 If you're using `Gradle`, you can use the following snippet in your `build.gradle` file to get RegexSynth:
 
 ```groovy
-implementation 'dev.yasint:regexsynth:1.0.2' // Groovy DSL
+implementation 'dev.yasint:regexsynth:1.0.3' // Groovy DSL
 ```
 
 ```kotlin
-implementation("dev.yasint:regexsynth:1.0.2") // Kotlin DSL
+implementation("dev.yasint:regexsynth:1.0.3") // Kotlin DSL
 ```
 
 You can use the same artifact details in any build system compatible with the Maven Central repositories (e.g. sbt, Ivy, leiningen, bazel, purl, badge, buildr, grape). Visit the [repo on Maven Central](https://search.maven.org/artifact/dev.yasint/regexsynth) .
