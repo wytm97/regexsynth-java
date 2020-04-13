@@ -28,7 +28,7 @@ public final class GroupsTest {
         final Pattern pattern = RegexSynth.compile(
                 RegexSynth.regexp(
                         nonCaptureGroup(
-                                digit().union(punctuationChar())
+                                digit().union(punctuation())
                         )
                 )
         );
@@ -40,7 +40,7 @@ public final class GroupsTest {
         final Pattern pattern = RegexSynth.compile(
                 RegexSynth.regexp(
                         namedCaptureGroup("someName",
-                                word().union(punctuationChar())
+                                word().union(punctuation())
                         )
                 )
         );
@@ -50,7 +50,7 @@ public final class GroupsTest {
     @Test(expected = RuntimeException.class)
     public void itShouldThrowAnExceptionIfTheNamedCaptureGroupNameIsInvalid() {
         namedCaptureGroup("- 902 someName",
-                word().union(punctuationChar())
+                word().union(punctuation())
         ).toRegex();
     }
 

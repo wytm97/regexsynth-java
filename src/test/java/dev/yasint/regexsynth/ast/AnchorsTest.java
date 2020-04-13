@@ -5,7 +5,7 @@ import dev.yasint.regexsynth.core.RegexSynth;
 import org.junit.Test;
 
 import static dev.yasint.regexsynth.ast.Anchors.*;
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.alphabeticChar;
+import static dev.yasint.regexsynth.ast.CharClasses.Posix.alphabetic;
 import static dev.yasint.regexsynth.ast.CharClasses.Posix.word;
 import static dev.yasint.regexsynth.ast.Groups.captureGroup;
 import static dev.yasint.regexsynth.ast.Literals.literal;
@@ -111,7 +111,7 @@ public final class AnchorsTest {
                 RegexSynth.regexp(
                         exactWordBoundary(
                                 literal("p"),
-                                oneOrMoreTimes(alphabeticChar()),
+                                oneOrMoreTimes(alphabetic()),
                                 literal("p")
                         )
                 )

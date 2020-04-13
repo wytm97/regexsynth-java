@@ -82,6 +82,7 @@ public final class Groups {
         throw new UnsupportedOperationException();
     }
 
-    private interface NonCaptureGroup extends Expression { }
+    private interface NonCaptureGroup extends Expression {
+    }
 
 }

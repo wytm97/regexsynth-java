@@ -47,7 +47,7 @@ public final class Operators {
     public static Expression either(final Set<String> strings) {
         final TrieStructure trie = new TrieStructure();
         trie.insertAll(strings);
-        return trie::toRegex;
+        return trie;
     }
 
     /**

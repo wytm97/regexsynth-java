@@ -24,19 +24,19 @@ public final class CharClassesTest {
 
     @Test
     public void itShouldCreateCorrectPOSIXLowerCaseCharClass() {
-        final RegexSet set = lowercaseChar();
+        final RegexSet set = lowercase();
         assertEquals(set.toRegex().toString(), "[a-z]");
     }
 
     @Test
     public void itShouldCreateCorrectPOSIXUpperCaseCharClass() {
-        final RegexSet set = uppercaseChar();
+        final RegexSet set = uppercase();
         assertEquals(set.toRegex().toString(), "[A-Z]");
     }
 
     @Test
     public void itShouldCreateCorrectPOSIXAlphabeticCharClass() {
-        final RegexSet set = alphabeticChar();
+        final RegexSet set = alphabetic();
         assertEquals(set.toRegex().toString(), "[A-Za-z]");
     }
 
@@ -54,19 +54,19 @@ public final class CharClassesTest {
 
     @Test
     public void itShouldCreateCorrectPOSIXAlphanumericCharClass() {
-        final RegexSet set = alphanumericChar();
+        final RegexSet set = alphanumeric();
         assertEquals(set.toRegex().toString(), "[0-9A-Za-z]");
     }
 
     @Test
     public void itShouldCreateCorrectPOSIXPunctCharClass() {
-        final RegexSet set = punctuationChar();
+        final RegexSet set = punctuation();
         assertEquals(set.toRegex().toString(), "[!-\\/:-@[-`{-~]");
     }
 
     @Test
     public void itShouldCreateCorrectPOSIXGraphCharClass() {
-        final RegexSet set = graphicalChar();
+        final RegexSet set = graphical();
         assertEquals(set.toRegex().toString(), "[!-~]");
     }
 
@@ -78,7 +78,7 @@ public final class CharClassesTest {
 
     @Test
     public void itShouldCreateCorrectPOSIXBlankCharClass() {
-        final RegexSet set = blankChar();
+        final RegexSet set = blank();
         assertEquals(set.toRegex().toString(), "[\\x09 ]");
     }
 
@@ -90,7 +90,7 @@ public final class CharClassesTest {
 
     @Test
     public void itShouldCreateCorrectPOSIXWhitespaceCharClass() {
-        final RegexSet set = whitespaceChar();
+        final RegexSet set = whitespace();
         assertEquals(set.toRegex().toString(), "[\\x09-\\x0D ]");
     }
 
@@ -132,13 +132,13 @@ public final class CharClassesTest {
 
     @Test
     public void itShouldCreateAllAsciiCharClassRange() {
-        final RegexSet ascii = asciiChar();
+        final RegexSet ascii = ascii();
         assertEquals(ascii.toRegex().toString(), "[\\x00-\\x7F]");
     }
 
     @Test
     public void itShouldCreateAllExtendedAsciiCharClassRange() {
-        final RegexSet ascii = ascii2Char();
+        final RegexSet ascii = ascii2();
         assertEquals(ascii.toRegex().toString(), "[\\x00-ÿ]");
     }
 

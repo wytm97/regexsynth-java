@@ -11,7 +11,8 @@ public final class CharClasses {
 
     /**
      * Matches any character, possibly including newline \n if
-     * the 's' {@link dev.yasint.regexsynth.core.RegexSynth.Flags} DOTALL flag is turned on.
+     * the 's' {@link dev.yasint.regexsynth.core.RegexSynth.Flags}
+     * DOTALL flag is turned on.
      *
      * @return match anything expression
      */
@@ -66,8 +67,12 @@ public final class CharClasses {
      */
     public static RegexSet simpleSet(final String... characters) {
         final RegexSet set = new RegexSet(false);
-        for (final String c : Objects.requireNonNull(characters))
+        for (final String c : Objects.requireNonNull(characters)) {
+            if (c.length() > 2) {
+                throw new RuntimeException("bmp or astral codepoint required");
+            }
             set.addChar(Utility.toCodepoint(c));
+        }
         return set;
     }
 
@@ -95,7 +100,7 @@ public final class CharClasses {
          *
          * @return lowercase charclass
          */
-        public static RegexSet lowercaseChar() {
+        public static RegexSet lowercase() {
             return rangedSet("a", "z");
         }
 
@@ -106,7 +111,7 @@ public final class CharClasses {
          *
          * @return uppercase charclass
          */
-        public static RegexSet uppercaseChar() {
+        public static RegexSet uppercase() {
             return rangedSet("A", "Z");
         }
 
@@ -115,7 +120,7 @@ public final class CharClasses {
          *
          * @return ascii charset
          */
-        public static RegexSet asciiChar() {
+        public static RegexSet ascii() {
             return rangedSet(0x00, 0x7F);
         }
 
@@ -124,7 +129,7 @@ public final class CharClasses {
          *
          * @return ascii charset
          */
-        public static RegexSet ascii2Char() {
+        public static RegexSet ascii2() {
             return rangedSet(0x00, 0xFF);
         }
 
@@ -134,9 +139,9 @@ public final class CharClasses {
          *
          * @return alphabetic charclass
          */
-        public static RegexSet alphabeticChar() {
-            return lowercaseChar()
-                    .union(uppercaseChar());
+        public static RegexSet alphabetic() {
+            return lowercase()
+                    .union(uppercase());
         }
 
         /**
@@ -164,8 +169,8 @@ public final class CharClasses {
          *
          * @return alphanumeric charclass
          */
-        public static RegexSet alphanumericChar() {
-            return alphabeticChar().union(digit());
+        public static RegexSet alphanumeric() {
+            return alphabetic().union(digit());
         }
 
         /**
@@ -174,7 +179,7 @@ public final class CharClasses {
          *
          * @return punctuation charclass
          */
-        public static RegexSet punctuationChar() {
+        public static RegexSet punctuation() {
             final String elements = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
             return simpleSet(elements.split("")/*split into char*/);
         }
@@ -185,8 +190,8 @@ public final class CharClasses {
          *
          * @return graphical charclass
          */
-        public static RegexSet graphicalChar() {
-            return alphanumericChar().union(punctuationChar());
+        public static RegexSet graphical() {
+            return alphanumeric().union(punctuation());
         }
 
         /**
@@ -196,7 +201,7 @@ public final class CharClasses {
          * @return printable charclass
          */
         public static RegexSet printableChar() {
-            return graphicalChar().union(simpleSet(0x20/*space*/));
+            return graphical().union(simpleSet(0x20/*space*/));
         }
 
         /**
@@ -205,7 +210,7 @@ public final class CharClasses {
          *
          * @return blank-space charclass
          */
-        public static RegexSet blankChar() {
+        public static RegexSet blank() {
             return simpleSet(0x09/*h-tab*/, 0x20/*space*/);
         }
 
@@ -227,7 +232,7 @@ public final class CharClasses {
          *
          * @return white space charclass
          */
-        public static RegexSet whitespaceChar() {
+        public static RegexSet whitespace() {
             // following codepoints as [ \t\n\v\f\r] 0x0B == \v
             return simpleSet(0x20, 0x9, 0xA, 0xB, 0xC, 0xD);
         }
@@ -242,7 +247,7 @@ public final class CharClasses {
         public static RegexSet notWhitespace() {
             // following codepoints as [^ \t\n\v\f\r] 0x0B == \v
             // in some languages, including java.
-            return negated(whitespaceChar());
+            return negated(whitespace());
         }
 
         /**
@@ -252,7 +257,7 @@ public final class CharClasses {
          * @return word charclass
          */
         public static RegexSet word() {
-            return alphanumericChar().union(simpleSet("_"));
+            return alphanumeric().union(simpleSet("_"));
         }
 
         /**
@@ -278,6 +283,8 @@ public final class CharClasses {
         }
 
         public static RegexSet horizontalTab() {
+            // \h 	A horizontal whitespace character: [ \t\xA0\u1680\u180e\u2000-\u200a\u202f\u205f\u3000]
+            // \H 	A non-horizontal whitespace character: [^\h]
             return simpleSet(0x09); // \t
         }
 
@@ -286,6 +293,9 @@ public final class CharClasses {
         }
 
         public static RegexSet verticalTab() {
+            // Re consider:
+            // \v 	A vertical whitespace character: [\n\x0B\f\r\x85\u2028\u2029]
+            // \V 	A non-vertical whitespace character: [^\v]
             return simpleSet(0x0B);
         }
 

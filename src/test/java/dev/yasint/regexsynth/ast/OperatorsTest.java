@@ -15,7 +15,7 @@ public final class OperatorsTest {
     @Test
     public void itShouldCreateAlternationBetweenMultipleExpressions() {
         String regexp = regexp(
-                either(digit(), uppercaseChar(), lowercaseChar())
+                either(digit(), uppercase(), lowercase())
         );
         Pattern pattern = RegexSynth.compile(regexp);
         assertEquals(pattern.pattern(), "[0-9]|[A-Z]|[a-z]");
@@ -35,7 +35,7 @@ public final class OperatorsTest {
         String regexp = regexp(
                 concat(
                         digit(),
-                        punctuationChar()
+                        punctuation()
                 )
         );
         Pattern pattern = RegexSynth.compile(regexp);

@@ -1,6 +1,7 @@
 package dev.yasint.regexsynth.core;
 
 import com.google.re2j.Pattern;
+import dev.yasint.regexsynth.ast.RegexSet;
 import org.junit.Test;
 
 import java.time.Year;
@@ -47,7 +48,12 @@ public final class RegexSynthTest {
                 )
         );
 
+        RegexSet regexSet = simpleSet("/", ".").withUnicodeClass(UnicodeScript.ARABIC, false);
+        System.out.println(regexSet.toRegex().toString());
+
         Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
+
+        System.out.println(pattern.pattern());
 
         assertEquals(pattern.pattern(), "^(?:2020|201[2-9])\\-((?:A(?:pr|ug)|Dec|Feb|" +
                 "J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\\-((?:0?(?:3[0-1]|[1-2][0-9]|[1-9])))$");
@@ -57,32 +63,47 @@ public final class RegexSynthTest {
     @Test
     public void itShouldCreateCorrectURLExpression() {
 
-        final String expression = regexp(exactLineMatch(
-                namedCaptureGroup("protocol", // protocol matching expression
-                        either("http", "https", "ftp")
-                ),
-                literal("://"), // delimiter
-                namedCaptureGroup("subDomain", // sub-domain matching expression
-                        oneOrMoreTimes( // i.e. www.google, dev-console.firebase
-                                alphanumericChar().union(simpleSet("-", "."))
-                        )
-                ),
-                literal("."), // delimiter
-                namedCaptureGroup("tld", // top-level-domain matching expression
-                        between(2, 4, alphabeticChar())
-                ),
-                optional(namedCaptureGroup("port", // port matching expression (optional ?)
-                        literal(":"), // prefix
-                        oneOrMoreTimes(digit())
-                )),
-                optional(literal("/")), // delimiter (optional ?)
-                namedCaptureGroup("resource", // resource matching expression
-                        zeroOrMoreTimes(anything())
+        // Protocol matching expression
+        Expression protocol = namedCaptureGroup("protocol",
+                either("http", "https", "ftp")
+        );
+
+        // Sub-domain matching expression. i.e. www.google, dev-console.firebase
+        Expression sub_domain = namedCaptureGroup("subDomain",
+                oneOrMoreTimes(
+                        alphanumeric().union(simpleSet("-", "."))
                 )
-        ));
+        );
+
+        // TLD matching expression
+        Expression tld = namedCaptureGroup("tld",
+                between(2, 4, alphabetic())
+        );
+
+        // port matching expression (optional ?)
+        Expression port = optional(
+                namedCaptureGroup("port",
+                        literal(":"), oneOrMoreTimes(digit())
+                )
+        );
+
+        // Resource matching expression
+        Expression resource = namedCaptureGroup("resource",
+                zeroOrMoreTimes(anything())
+        );
+
+        // Combine all isolated partial expressions
+        String expression = regexp(
+                exactLineMatch(
+                        protocol, literal("://"), sub_domain, literal("."), tld,
+                        port, optional(literal("/")), resource
+                )
+        );
 
         Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
 
     }
+
+    private interface BoundaryMatcher extends Expression { }
 
 }
