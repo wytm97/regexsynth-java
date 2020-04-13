@@ -124,7 +124,7 @@ Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
 ^(?P<protocol>(?:ftp|https?)):\/\/(?P<subDomain>[\-.0-9A-Za-z]+)\.(?P<tld>[A-Za-z]{2,4})(?P<port>:[0-9]+)?\/?(?P<resource>.*)$
 ```
 
-# **Architecture**
+# **Design & Architecture**
 
 RegexSynth has a simple yet an elegant architecture where all the [regular expression constructs](https://github.com/wytm97/regexsynth-java/wiki/Documentation) share the same functional interface `Expression`. It allows us to declare and combine any type of expression and wrap expressions on top of expressions. This produces an explicit function driven [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) for the regex, which is then transpiled to a RE2 interpretable regular expression.
 
