@@ -101,9 +101,9 @@ public final class RegexSynthTest {
         );
 
         Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
+        assertEquals(pattern.pattern(), "^(?P<protocol>(?:ftp|https?)):\\/\\/(?P<subDomain>[\\-.0-9A-Za-z]+)" +
+                "\\.(?P<tld>[A-Za-z]{2,4})(?P<port>:[0-9]+)?\\/?(?P<resource>.*)$");
 
     }
-
-    private interface BoundaryMatcher extends Expression { }
 
 }
