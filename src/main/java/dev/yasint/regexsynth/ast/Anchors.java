@@ -6,13 +6,19 @@ import java.util.Arrays;
 
 import static dev.yasint.regexsynth.core.Constructs.*;
 
-
+/**
+ * This class contains all the anchors/boundary matchers that
+ * RE2 regex engine supports.
+ *
+ * @implNote All are pure functions
+ * @since  1.0.0
+ */
 public final class Anchors {
 
     /**
      * Inserts a word boundary at position. There are different
      * positions that qualify as a word boundary.
-     * <p>
+     *
      * First, it can be used before the first character in the string,
      * if the first character is a word character. Second, after the
      * last character in the string, if the last character is a word
@@ -22,7 +28,8 @@ public final class Anchors {
      * @return boundary expression \b
      */
     public static Expression wordBoundary() {
-        return () -> new StringBuilder(2).append(WORD_BOUNDARY);
+        return () -> new StringBuilder(2)
+                .append(WORD_BOUNDARY);
     }
 
     /**
@@ -33,7 +40,8 @@ public final class Anchors {
      * @return non-boundary expression \B
      */
     public static Expression nonWordBoundary() {
-        return () -> new StringBuilder(2).append(NON_WORD_BOUNDARY);
+        return () -> new StringBuilder(2)
+                .append(NON_WORD_BOUNDARY);
     }
 
     /**
@@ -46,13 +54,15 @@ public final class Anchors {
      * @return expression start of line ^
      */
     public static Expression startOfLine() {
-        return () -> new StringBuilder(1).append(CARAT);
+        return () -> new StringBuilder(1)
+                .append(CARAT);
     }
 
     /**
      * Inserts a end of line character at position. Use `$` with the multiline
      * option, the match can also occur at the end of a line. `$` matches `\n`
-     * but does not match `\r\n`
+     * but does not match `\r\n`. However, you can get the functionality of
+     * crlf (Carriage Return - Line Feed) using boolean flag setting to true.
      *
      * @param crlf \r\n combination, appended \r before \n if true.
      * @return expression
@@ -72,11 +82,13 @@ public final class Anchors {
      * @return expression \A absolute start
      */
     public static Expression startOfText() {
-        return () -> new StringBuilder(2).append(BEGINNING_OF_TEXT);
+        return () -> new StringBuilder(2)
+                .append(BEGINNING_OF_TEXT);
     }
 
     /**
      * Inserts a end of text/string assertion at the position.
+     * This function can be considered as a pure function.
      *
      * @return expression \z absolute end
      */
