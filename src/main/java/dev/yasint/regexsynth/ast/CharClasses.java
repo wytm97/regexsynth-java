@@ -1,6 +1,5 @@
 package dev.yasint.regexsynth.ast;
 
-import dev.yasint.regexsynth.core.Expression;
 import dev.yasint.regexsynth.core.Utility;
 
 import java.util.Objects;
@@ -22,9 +21,8 @@ public final class CharClasses {
      *
      * @return match anything
      */
-    public static Expression anything() {
-        return () -> new StringBuilder(1)
-                .append(PERIOD);
+    public static RegexSet anything() {
+        return simpleSet(PERIOD);
     }
 
     /**
