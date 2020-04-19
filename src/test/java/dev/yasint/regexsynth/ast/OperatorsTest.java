@@ -7,38 +7,31 @@ import org.junit.Test;
 import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
 import static dev.yasint.regexsynth.ast.Operators.concat;
 import static dev.yasint.regexsynth.ast.Operators.either;
-import static dev.yasint.regexsynth.core.RegexSynth.regexp;
 import static org.junit.Assert.assertEquals;
 
 public final class OperatorsTest {
 
     @Test
     public void itShouldCreateAlternationBetweenMultipleExpressions() {
-        String regexp = regexp(
+        Pattern pattern = new RegexSynth(
                 either(digit(), uppercase(), lowercase())
-        );
-        Pattern pattern = RegexSynth.compile(regexp);
-        assertEquals(pattern.pattern(), "[0-9]|[A-Z]|[a-z]");
+        ).compile();
+        assertEquals(pattern.pattern(), "(?:[0-9]|[A-Z]|[a-z])");
     }
 
     @Test
     public void itShouldCreateAlternationBetweenMultipleStrings() {
-        String regexp = regexp(
+        Pattern pattern = new RegexSynth(
                 either("http", "https", "ws", "wss")
-        );
-        Pattern pattern = RegexSynth.compile(regexp);
+        ).compile();
         assertEquals(pattern.pattern(), "(?:https?|wss?)");
     }
 
     @Test
     public void itShouldConcatMultipleExpressionsIntoOne() {
-        String regexp = regexp(
-                concat(
-                        digit(),
-                        punctuation()
-                )
-        );
-        Pattern pattern = RegexSynth.compile(regexp);
+        Pattern pattern = new RegexSynth(
+                concat(digit(), punctuation())
+        ).compile();
         assertEquals(pattern.pattern(), "[0-9][!-\\/:-@[-\\`{-~]");
     }
 

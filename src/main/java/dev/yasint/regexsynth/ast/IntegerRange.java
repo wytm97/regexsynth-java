@@ -9,11 +9,11 @@ import static dev.yasint.regexsynth.core.Constructs.*;
 
 /**
  * Synthesis :: Regular Expression Integer Range
- * <p>
+ *
  * This generates a regular expression number range given
  * inclusive start and end integers. This implementation's
  * running time is O(log n).
- * <p>
+ *
  * This code is originally based on a StackOverflow post answer.
  * However, the code has some optimizations and changes to match
  * our use-case. `https://bit.ly/3bIXZBy`
@@ -125,21 +125,55 @@ public final class IntegerRange implements Expression {
 
     @Override
     public StringBuilder toRegex() {
+
         final String startStr = String.valueOf(start);
         final String endStr = String.valueOf(end);
         final StringBuilder result = new StringBuilder();
+
+        int repeatedCount = 0;
+        char previousDigitA = 0, previousDigitB = 0;
+
         for (int pos = 0; pos < startStr.length(); pos++) {
-            if (startStr.charAt(pos) == endStr.charAt(pos)) {
-                result.append(startStr.charAt(pos));
+
+            char currentDigitA = startStr.charAt(pos);
+            char currentDigitB = endStr.charAt(pos);
+
+            if (currentDigitA == currentDigitB) {
+                result.append(currentDigitA);
             } else {
+                // previous is equal to this
+                if (previousDigitA == currentDigitA && previousDigitB == currentDigitB) {
+                    repeatedCount++; // increment the quantifier
+                    if (!(pos == startStr.length() - 1)) {
+                        continue; // if not last
+                    } else { // if it is last
+                        result
+                                .append(OPEN_CURLY_BRACE)
+                                .append(++repeatedCount)
+                                .append(CLOSE_CURLY_BRACE);
+                        break;
+                    }
+                }
+                if (repeatedCount > 0) {
+                    result
+                            .append(OPEN_CURLY_BRACE)
+                            .append(repeatedCount)
+                            .append(CLOSE_CURLY_BRACE);
+                    repeatedCount = 0;
+                }
                 result.append(OPEN_SQUARE_BRACKET)
-                        .append(startStr.charAt(pos))
-                        .append(HYPHEN)
-                        .append(endStr.charAt(pos))
+                        .append(currentDigitA)
+                        .append(currentDigitB - currentDigitA == 1 ? "" : HYPHEN)
+                        .append(currentDigitB)
                         .append(CLOSE_SQUARE_BRACKET);
+                previousDigitA = currentDigitA;
+                previousDigitB = currentDigitB;
             }
+
         }
+
         return result;
+
     }
 
 }

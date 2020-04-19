@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 /**
  * An abstract representation of a expression. This can be either
  * a complete expression or a 'partial' expression.
- * <p>
+ *
  * The {@code toRegex} lambda function returns a string representation
  * of a regular expression. (It can be any of the regex constructs)
  */

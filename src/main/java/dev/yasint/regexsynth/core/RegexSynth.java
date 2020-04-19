@@ -10,34 +10,18 @@ import java.util.stream.Collectors;
 
 public final class RegexSynth {
 
-    private RegexSynth() {
-    }
+    private String expression;
 
     /**
      * Creates a complete regular expression. It combines
      * all the sub expressions into one.
      *
      * @param expressions sub-expressions
-     * @return string representation of the expression
      */
-    public static String regexp(final Expression... expressions) {
-        return Arrays.stream(expressions)
+    public RegexSynth(final Expression... expressions) {
+        this.expression = Arrays.stream(expressions)
                 .map(Expression::toRegex)
                 .collect(Collectors.joining());
-    }
-
-    /**
-     * Compiles the created regular expression pattern into a
-     * RE2 {@link Pattern} instance.
-     *
-     * @param expression final expression
-     * @param flags      global modifiers
-     * @return Re2J Pattern instance
-     */
-    public static Pattern compile(final String expression, final Flags... flags) {
-        int fl = 0;
-        for (final Flags flag : flags) fl += flag.val;
-        return Pattern.compile(expression, fl);
     }
 
     /**
@@ -55,7 +39,21 @@ public final class RegexSynth {
         return groups;
     }
 
-    public static enum Flags {
+    /**
+     * Compiles the created regular expression pattern into a
+     * RE2 {@link Pattern} instance.
+     *
+     * @param flags global modifiers
+     * @return Re2J Pattern instance
+     */
+    public Pattern compile(final Flags... flags) {
+        int fl = 0;
+        for (final Flags flag : flags) fl += flag.val;
+        return Pattern.compile(this.expression, fl);
+    }
+
+    @SuppressWarnings("unused")
+    public enum Flags {
 
         // RE2 matches unicode by default
 
@@ -66,7 +64,7 @@ public final class RegexSynth {
 
         public final int val;
 
-        private Flags(int val) {
+        Flags(int val) {
             this.val = val;
         }
 

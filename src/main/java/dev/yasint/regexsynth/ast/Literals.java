@@ -41,9 +41,8 @@ public final class Literals {
 
     /**
      * Appends the given unicode block to the expression. It can only be
-     * one of the values from the list (https://github.com/google/re2/wiki/Syntax).
-     * And you can negate the unicode class by specifying the negated to
-     * {@code true} or {@code false}.
+     * one of the values from the {@link UnicodeScript}. And you can negate
+     * the unicode class by specifying the negated to {@code true} or {@code false}.
      *
      * @param block   unicode general category block / script block
      * @param negated whether the block is negated or not

@@ -12,7 +12,7 @@ import static dev.yasint.regexsynth.core.Constructs.*;
 
 /**
  * Synthesis :: Regular Expression Set
- * <p>
+ *
  * This generates a regular expression set when given a range
  * or chars. This class handles the simple character class and
  * ranged character classes expressions along with set negation.
@@ -154,7 +154,7 @@ public final class RegexSet implements Expression {
 
         // coping the tree set to this set will not change the order.
         // we need to copy this set's elements to this because we need to
-        // access each element by it's index. [this has a extra cost :(]
+        // access each element by it's index.
         final Integer[] chars = codepoints.toArray(new Integer[0]);
 
         // Empty set. (probably after operations) but also check
@@ -164,8 +164,8 @@ public final class RegexSet implements Expression {
         }
 
         // avoid creating a set expression. instead just
-        // escape the sequence. [a] => a
-        if (chars.length == 1 && unicodeClasses.isEmpty()) {
+        // escape the sequence. [a] => a (only if its not negated)
+        if (chars.length == 1 && !negated && unicodeClasses.isEmpty()) {
             return new StringBuilder().append(
                     toRegexInterpretable(chars[0])
             );

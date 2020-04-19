@@ -13,37 +13,31 @@ public final class GroupsTest {
 
     @Test
     public void itShouldCreateANonCapturingGroup() {
-        final Pattern pattern = RegexSynth.compile(
-                RegexSynth.regexp(
-                        nonCaptureGroup(
-                                digit()
-                        )
+        final Pattern pattern = new RegexSynth(
+                nonCaptureGroup(
+                        digit()
                 )
-        );
+        ).compile();
         assertEquals(pattern.pattern(), "(?:[0-9])");
     }
 
     @Test
     public void itShouldCreateACapturingGroup() {
-        final Pattern pattern = RegexSynth.compile(
-                RegexSynth.regexp(
-                        nonCaptureGroup(
-                                digit().union(punctuation())
-                        )
+        final Pattern pattern = new RegexSynth(
+                nonCaptureGroup(
+                        digit().union(punctuation())
                 )
-        );
+        ).compile();
         assertEquals(pattern.pattern(), "(?:[!-@[-\\`{-~])");
     }
 
     @Test
     public void itShouldCreateANamedCaptureGroup() {
-        final Pattern pattern = RegexSynth.compile(
-                RegexSynth.regexp(
-                        namedCaptureGroup("someName",
-                                word().union(punctuation())
-                        )
+        final Pattern pattern = new RegexSynth(
+                namedCaptureGroup("someName",
+                        word().union(punctuation())
                 )
-        );
+        ).compile();
         assertEquals(pattern.pattern(), "(?P<someName>[!-~])");
     }
 

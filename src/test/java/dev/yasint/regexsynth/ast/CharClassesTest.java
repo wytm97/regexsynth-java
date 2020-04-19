@@ -9,17 +9,16 @@ import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
 import static dev.yasint.regexsynth.ast.CharClasses.anything;
 import static dev.yasint.regexsynth.ast.CharClasses.rangedSet;
 import static dev.yasint.regexsynth.ast.Quantifiers.exactly;
-import static dev.yasint.regexsynth.core.RegexSynth.regexp;
 import static org.junit.Assert.assertEquals;
 
 public final class CharClassesTest {
 
     @Test
     public void itShouldAppendMatchAnyCharacterAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                regexp(exactly(5, anything()))
-        );
-        assertEquals(expression.pattern(), ".{5}");
+        final Pattern expression = new RegexSynth(
+                exactly(5, anything())
+        ).compile();
+        assertEquals(expression.pattern(), "(?:.){5}");
     }
 
     @Test
@@ -115,6 +114,9 @@ public final class CharClassesTest {
     @Test
     public void itShouldReturnCorrectEscapeSequence() {
         final RegexSet backslash = backslash();
+        final RegexSet doubleQuotes = doubleQuotes();
+        final RegexSet singleQuote = singleQuote();
+        final RegexSet backtick = backtick();
         final RegexSet bell = bell();
         final RegexSet horizontalTab = horizontalTab();
         final RegexSet linebreak = linebreak();
@@ -122,6 +124,9 @@ public final class CharClassesTest {
         final RegexSet formfeed = formfeed();
         final RegexSet carriageReturn = carriageReturn();
         assertEquals(backslash.toRegex().toString(), "\\\\");
+        assertEquals(doubleQuotes.toRegex().toString(), "\\\"");
+        assertEquals(singleQuote.toRegex().toString(), "\\'");
+        assertEquals(backtick.toRegex().toString(), "\\`");
         assertEquals(bell.toRegex().toString(), "\\x07");
         assertEquals(horizontalTab.toRegex().toString(), "\\x09");
         assertEquals(linebreak.toRegex().toString(), "\\x0A");

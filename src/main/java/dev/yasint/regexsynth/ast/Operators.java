@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
 import static dev.yasint.regexsynth.core.Constructs.ALTERNATION;
 
 public final class Operators {
@@ -23,7 +24,7 @@ public final class Operators {
         final String alternations = Arrays.stream(Objects.requireNonNull(expressions))
                 .map(Expression::toRegex)
                 .collect(Collectors.joining(ALTERNATION));
-        return () -> new StringBuilder(alternations);
+        return nonCaptureGroup(() -> new StringBuilder(alternations));
     }
 
     /**

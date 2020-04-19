@@ -7,6 +7,12 @@ import java.util.Objects;
 
 import static dev.yasint.regexsynth.core.Constructs.PERIOD;
 
+/**
+ * Contains all the set constructs and character classes.
+ * RegexSynth supports all the POSIX character classes.
+ *
+ * @since 1.0.0
+ */
 public final class CharClasses {
 
     /**
@@ -14,10 +20,11 @@ public final class CharClasses {
      * the 's' {@link dev.yasint.regexsynth.core.RegexSynth.Flags}
      * DOTALL flag is turned on.
      *
-     * @return match anything expression
+     * @return match anything
      */
     public static Expression anything() {
-        return () -> new StringBuilder(1).append(PERIOD);
+        return () -> new StringBuilder(1)
+                .append(PERIOD);
     }
 
     /**
@@ -40,7 +47,8 @@ public final class CharClasses {
      * @return set expression
      */
     public static RegexSet rangedSet(final String from, final String to) {
-        if (from == null || to == null) throw new NullPointerException();
+        if (from == null || to == null)
+            throw new NullPointerException();
         final RegexSet set = new RegexSet(false);
         set.addRange(Utility.toCodepoint(from), Utility.toCodepoint(to));
         return set;
@@ -60,7 +68,10 @@ public final class CharClasses {
     }
 
     /**
-     * Creates a simple regex charclass i.e. [135]
+     * Creates a simple regex charclass i.e. [135] will be optimized
+     * if it's a valid range. for example: if you pass a,b,c,d,f it
+     * will create [a-df]. but if you pass elements like a,z then it
+     * will only create a set for those two element without ranges [az]
      *
      * @param characters characters (surrogates or bmp)
      * @return set expression
@@ -69,7 +80,9 @@ public final class CharClasses {
         final RegexSet set = new RegexSet(false);
         for (final String c : Objects.requireNonNull(characters)) {
             if (c.length() > 2) {
-                throw new RuntimeException("bmp or astral codepoint required");
+                // cannot pass long strings or texts to a set! it makes no sense.
+                // and this only accepts valid bmp or astral symbols.
+                throw new RuntimeException("expected bmp or astral codepoint");
             }
             set.addChar(Utility.toCodepoint(c));
         }
@@ -273,6 +286,10 @@ public final class CharClasses {
     }
 
     public static class EscapeSequences {
+
+        public static RegexSet space() {
+            return simpleSet(" ");
+        }
 
         public static RegexSet backslash() {
             return simpleSet("\\"); // \

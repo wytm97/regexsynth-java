@@ -1,23 +1,24 @@
 package dev.yasint.regexsynth.core;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.ast.RegexSet;
 import org.junit.Test;
 
 import java.time.Year;
 
 import static dev.yasint.regexsynth.ast.Anchors.exactLineMatch;
+import static dev.yasint.regexsynth.ast.Anchors.startOfLine;
+import static dev.yasint.regexsynth.ast.CharClasses.EscapeSequences.linebreak;
+import static dev.yasint.regexsynth.ast.CharClasses.EscapeSequences.space;
 import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
-import static dev.yasint.regexsynth.ast.CharClasses.anything;
-import static dev.yasint.regexsynth.ast.CharClasses.simpleSet;
+import static dev.yasint.regexsynth.ast.CharClasses.*;
 import static dev.yasint.regexsynth.ast.Groups.captureGroup;
 import static dev.yasint.regexsynth.ast.Groups.namedCaptureGroup;
 import static dev.yasint.regexsynth.ast.Literals.literal;
 import static dev.yasint.regexsynth.ast.Numeric.integerRange;
 import static dev.yasint.regexsynth.ast.Numeric.leadingZero;
+import static dev.yasint.regexsynth.ast.Operators.concat;
 import static dev.yasint.regexsynth.ast.Operators.either;
 import static dev.yasint.regexsynth.ast.Quantifiers.*;
-import static dev.yasint.regexsynth.core.RegexSynth.regexp;
 import static org.junit.Assert.assertEquals;
 
 public final class RegexSynthTest {
@@ -38,7 +39,7 @@ public final class RegexSynthTest {
                 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
         };
 
-        String expression = regexp(
+        Pattern expression = new RegexSynth(
                 exactLineMatch( // Enclosed in ^...$
                         integerRange(2012, Year.now().getValue()), // Year
                         literal("-"), // Delimiter
@@ -46,17 +47,70 @@ public final class RegexSynthTest {
                         literal("-"), // Delimiter
                         captureGroup(leadingZero(integerRange(1, 31))) // Day - group 2
                 )
+        ).compile();
+
+        assertEquals(expression.pattern(), "^(?:2020|201[2-9])\\-((?:A(?:pr|ug)|Dec|Feb|" +
+                "J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\\-((?:0?(?:3[01]|[12][0-9]|[1-9])))$");
+
+    }
+
+    @Test
+    public void complexExpressionExampleTest() {
+
+        // Matches dates in range 2010-1-1 to 2020-12-31,
+        // has a space delimiter, and matches any string in the set
+        // {SO, SSE, PE, PA, SS}, has a space delimiter, matches a number 
+        // in range 58499 to 68599, has a space delimiter, one or more digit
+
+
+        final String expr = "((?:2020|201[0-9])\\-(?:0?(?:1[0-2]|[1-9]))" +
+                "\\-(?:0?(?:3[0-1]|[1-2][0-9]|[1-9]))) " +
+                "((?:P[AE]|S(?:SE?|O))) ((?:68[0-5][0-9]{2}" +
+                "|6[0-7][0-9]{3}|59[0-9]{3}|58[5-9][0-9]{2}|58499)) ([0-9]+)";
+
+
+        final Expression DATE = captureGroup(
+                integerRange(2010, 2020), literal("-"),
+                leadingZero(integerRange(1, 12)), literal("-"),
+                leadingZero(integerRange(1, 31))
         );
 
-        RegexSet regexSet = simpleSet("/", ".").withUnicodeClass(UnicodeScript.ARABIC, false);
-        System.out.println(regexSet.toRegex().toString());
+        final Expression DEPARTMENT_CODE = captureGroup(either("SO", "SS", "PE", "PA", "SSE"));
+        final Expression ITEM_CODE = captureGroup(integerRange(58499, 68599));
+        final Expression ITEM_STOCK_COUNT = captureGroup(oneOrMoreTimes(digit()));
+        final Expression DELIMITER = space();
 
-        Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
+        final Pattern expression = new RegexSynth(
+                DATE, DELIMITER, DEPARTMENT_CODE, DELIMITER,
+                ITEM_CODE, DELIMITER, ITEM_STOCK_COUNT
+        ).compile();
 
-        System.out.println(pattern.pattern());
+    }
 
-        assertEquals(pattern.pattern(), "^(?:2020|201[2-9])\\-((?:A(?:pr|ug)|Dec|Feb|" +
-                "J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\\-((?:0?(?:3[0-1]|[1-2][0-9]|[1-9])))$");
+    @Test
+    public void simpleExpressionExampleTest() {
+
+        // department-code stock-count some-date
+
+        final Expression DEPARTMENT_CODE = captureGroup(either("K", "KS", "KLE", "KLL"));
+        final Expression ITEM_STOCK_COUNT = captureGroup(exactly(3, digit()));
+        final Expression DATE = captureGroup(
+                exactly(4, digit()), literal("-"),
+                exactly(2, digit()), literal("-"),
+                exactly(2, digit())
+        );
+        final Expression DELIMITER = literal("**");
+
+        // final expression
+        final Pattern expression = new RegexSynth(
+                DEPARTMENT_CODE, DELIMITER,
+                ITEM_STOCK_COUNT, DELIMITER,
+                DATE
+        ).compile();
+
+        // Matches any string in the set {K, S, KS, KLE, KLL}, followed by two asterisks
+        // and 0 or 9 digit 3 times, followed by two asterisks, and matches date formats like 2020-11-31
+        final String expr = "(K(?:(?:L[EL]|S))?)\\*\\*([0-9]{3})\\*\\*([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})";
 
     }
 
@@ -93,16 +147,56 @@ public final class RegexSynthTest {
         );
 
         // Combine all isolated partial expressions
-        String expression = regexp(
+        Pattern expression = new RegexSynth(
                 exactLineMatch(
                         protocol, literal("://"), sub_domain, literal("."), tld,
                         port, optional(literal("/")), resource
                 )
+        ).compile();
+
+        assertEquals(expression.pattern(), "^(?P<protocol>(?:ftp|https?)):\\/\\/(?P<subDomain>(?:[\\-.0-9A-Za-z])+)" +
+                "\\.(?P<tld>(?:[A-Za-z]){2,4})(?:(?P<port>:(?:[0-9])+))?(?:\\/)?(?P<resource>(?:.)*)$");
+
+    }
+
+    @Test
+    public void itShouldCreateCorrectCommentExpression() {
+
+        /*
+         * Let's say we want to match comments like this and
+         * Java-Doc (/**) comments. It's very easy and readable.
+         */
+
+        final Expression javaFuncSignature = captureGroup(
+                // Match access specifiers including default
+                optional(concat(either("public", "private", "protected"), space())),
+                // Match synchronized methods if exist
+                optional(concat(literal("synchronized"), space())),
+                // Match static methods if exists
+                optional(concat(literal("static"), space())),
+                // Match strictfp methods if exists
+                optional(concat(literal("strictfp"), space())),
+                // Match the return type
+                concat(either(literal("void"), oneOrMoreTimes(word())), space()),
+                // Match the function name
+                oneOrMoreTimes(word()),
+                // Match the accepting parameters
+                literal("("), zeroOrMoreTimes(word().union(space())), literal(")"),
+                // After parameters a space following { and a \n
+                space(), literal("{"), linebreak(),
+                // Match the function body
+                zeroOrMoreTimes(negated(simpleSet("}"))),
+                // Match the closing brace
+                literal("}")
         );
 
-        Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
-        assertEquals(pattern.pattern(), "^(?P<protocol>(?:ftp|https?)):\\/\\/(?P<subDomain>[\\-.0-9A-Za-z]+)" +
-                "\\.(?P<tld>[A-Za-z]{2,4})(?P<port>:[0-9]+)?\\/?(?P<resource>.*)$");
+        final Pattern pattern = new RegexSynth(
+                startOfLine(),
+                either("/*", "/**"),
+                zeroOrMoreTimes(anything()), // Anything in between
+                literal("*/"),
+                word()
+        ).compile(RegexSynth.Flags.DOTALL);
 
     }
 

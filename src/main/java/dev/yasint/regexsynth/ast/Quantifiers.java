@@ -4,6 +4,7 @@ import dev.yasint.regexsynth.core.Expression;
 
 import java.util.Objects;
 
+import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
 import static dev.yasint.regexsynth.core.Constructs.*;
 
 public final class Quantifiers {
@@ -16,9 +17,8 @@ public final class Quantifiers {
      * @return quantified expression
      */
     public static Expression oneOrMoreTimes(final Expression expression) {
-        return () -> Objects.requireNonNull(expression)
-                .toRegex()
-                .append(PLUS);
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
+                .toRegex().append(PLUS);
     }
 
     /**
@@ -29,7 +29,7 @@ public final class Quantifiers {
      * @return quantified expression
      */
     public static Expression zeroOrMoreTimes(final Expression expression) {
-        return () -> Objects.requireNonNull(expression)
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
                 .append(ASTERISK);
     }
@@ -46,7 +46,7 @@ public final class Quantifiers {
     public static Expression exactlyOrMoreTimes(final int times, final Expression expression) {
         if (times == 0) return zeroOrMoreTimes(expression);
         if (times == 1) return oneOrMoreTimes(expression);
-        return () -> Objects.requireNonNull(expression)
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
                 .append(OPEN_CURLY_BRACE)
                 .append(times).append(COMMA) // {3,}
@@ -61,9 +61,9 @@ public final class Quantifiers {
      * @return quantified expression
      */
     public static Expression optional(final Expression expression) {
-        return () -> Objects.requireNonNull(expression)
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
-                .append(QUESTION_MARK);
+                .append(QUESTION_MARK); // ?
     }
 
     /**
@@ -81,10 +81,10 @@ public final class Quantifiers {
         if (times == 1) { // Redundant quantifier
             throw new RuntimeException("redundant quantifier");
         }
-        return () -> Objects.requireNonNull(expression)
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
                 .append(OPEN_CURLY_BRACE)
-                .append(times)
+                .append(times) // {3} exactly
                 .append(CLOSE_CURLY_BRACE);
     }
 
@@ -102,7 +102,8 @@ public final class Quantifiers {
         if (m == 0 && n == 0) throw new RuntimeException("redundant sub-sequence");
         if (m == 0 && n == 1) return optional(expression);
         if (m == 1 && n == 1) return expression;
-        return () -> Objects.requireNonNull(expression).toRegex()
+        return () -> nonCaptureGroup(Objects.requireNonNull(expression))
+                .toRegex()
                 .append(OPEN_CURLY_BRACE)
                 .append(m).append(COMMA).append(n)
                 .append(CLOSE_CURLY_BRACE);
@@ -116,7 +117,9 @@ public final class Quantifiers {
      * @return lazy-ly quantified expression.
      */
     public static Expression lazy(final Expression expression) {
-        return optional(expression);
+        return () -> expression
+                .toRegex()
+                .append(QUESTION_MARK);
     }
 
 }

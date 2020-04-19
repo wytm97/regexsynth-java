@@ -16,107 +16,89 @@ public final class AnchorsTest {
 
     @Test
     public void itShouldAppendAWordBoundaryAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        captureGroup(wordBoundary(), word())
-                )
-        );
+        final Pattern expression = new RegexSynth(
+                captureGroup(wordBoundary(), word())
+        ).compile();
         assertEquals(expression.pattern(), "(\\b[0-9A-Z_a-z])");
     }
 
     @Test
     public void itShouldAppendANonWordBoundaryAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        nonWordBoundary(),
-                        word()
-                )
-        );
+        final Pattern expression = new RegexSynth(
+                nonWordBoundary(),
+                word()
+        ).compile();
         assertEquals(expression.pattern(), "\\B[0-9A-Z_a-z]");
     }
 
     @Test
     public void itShouldAppendAStartOfLineAssertionAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        startOfLine(),
-                        word()
-                )
-        );
+        final Pattern expression = new RegexSynth(
+                startOfLine(),
+                word()
+        ).compile();
         assertEquals(expression.pattern(), "^[0-9A-Z_a-z]");
     }
 
     @Test
     public void itShouldAppendEndOfLineAssertionAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        startOfLine(),
-                        oneOrMoreTimes(word()),
-                        endOfLine(false)
-                )
-        );
-        assertEquals(expression.pattern(), "^[0-9A-Z_a-z]+$");
+        final Pattern expression = new RegexSynth(
+                startOfLine(),
+                oneOrMoreTimes(word()),
+                endOfLine(false)
+        ).compile();
+        assertEquals(expression.pattern(), "^(?:[0-9A-Z_a-z])+$");
     }
 
     @Test
     public void itShouldAppendEndOfLineAssertionWithOptionalCarriageReturnAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        startOfLine(),
-                        oneOrMoreTimes(word()),
-                        endOfLine(true)
-                )
-        );
-        assertEquals(expression.pattern(), "^[0-9A-Z_a-z]+\\x0D?$");
+        final Pattern expression = new RegexSynth(
+                startOfLine(),
+                oneOrMoreTimes(word()),
+                endOfLine(true)
+        ).compile();
+        assertEquals(expression.pattern(), "^(?:[0-9A-Z_a-z])+\\x0D?$");
     }
 
     @Test
     public void itShouldAppendStartOfTextAssertionAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        startOfText(),
-                        word()
-                )
-        );
+        final Pattern expression = new RegexSynth(
+                startOfText(),
+                word()
+        ).compile();
         assertEquals(expression.pattern(), "\\A[0-9A-Z_a-z]");
     }
 
     @Test
     public void itShouldAppendEndOfTextAssertionAtPosition() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        word(),
-                        endOfText()
-                )
-        );
+        final Pattern expression = new RegexSynth(
+                word(),
+                endOfText()
+        ).compile();
         assertEquals(expression.pattern(), "[0-9A-Z_a-z]\\z");
     }
 
     @Test
     public void itShouldWrapTheExpressionInLineMatcher() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        exactLineMatch(
-                                wordBoundary(),
-                                word()
-                        )
+        final Pattern expression = new RegexSynth(
+                exactLineMatch(
+                        wordBoundary(),
+                        word()
                 )
-        );
+        ).compile();
         assertEquals(expression.pattern(), "^\\b[0-9A-Z_a-z]$");
     }
 
     @Test
     public void itShouldWrapTheExpressionInWordBoundary() {
-        final Pattern expression = RegexSynth.compile(
-                RegexSynth.regexp(
-                        exactWordBoundary(
-                                literal("p"),
-                                oneOrMoreTimes(alphabetic()),
-                                literal("p")
-                        )
+        final Pattern expression = new RegexSynth(
+                exactWordBoundary(
+                        literal("p"),
+                        oneOrMoreTimes(alphabetic()),
+                        literal("p")
                 )
-        );
-        assertEquals(expression.pattern(), "\\bp[A-Za-z]+p\\b");
+        ).compile();
+        assertEquals(expression.pattern(), "\\bp(?:[A-Za-z])+p\\b");
     }
 
 }

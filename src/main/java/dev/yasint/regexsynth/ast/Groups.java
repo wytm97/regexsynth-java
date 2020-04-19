@@ -9,6 +9,13 @@ import java.util.Objects;
 import static dev.yasint.regexsynth.core.Constructs.*;
 import static dev.yasint.regexsynth.core.Utility.asRegexGroupName;
 
+/**
+ * Contains all the grouping constructs supported by the
+ * RE2 regex engine.
+ *
+ * @implNote All are pure functions
+ * @since 1.0.0
+ */
 public final class Groups {
 
     /**
@@ -73,16 +80,18 @@ public final class Groups {
                 ).append(PAREN_CLOSE);
     }
 
+    /**
+     * TODO: in a future release
+     *
+     * @param modifiers *
+     * @return *
+     */
     private static Expression withInlineModifiers(final RegexSynth.Flags... modifiers) {
-        // FIXME: in a future release
         // (?misU-misU:...) => default is -misU then add flags
         // before - separator. This should support remainder of the pattern
         // style where if you specify just (?misU) pattern applies
         // it to the rest but can be overriden by nested-capturing groups.
         throw new UnsupportedOperationException();
-    }
-
-    private interface NonCaptureGroup extends Expression {
     }
 
 }
