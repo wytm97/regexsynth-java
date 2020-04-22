@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.Constructs.ALTERNATION;
+import static dev.yasint.regexsynth.core.RegexConstructs.ALTERNATION;
 
 public final class Operators {
 
@@ -46,7 +46,7 @@ public final class Operators {
      * @return wrapped alternated strings
      */
     public static Expression either(final Set<String> strings) {
-        final TrieStructure trie = new TrieStructure();
+        final TrieExpression trie = new TrieExpression();
         trie.insertAll(strings);
         return trie;
     }

@@ -1,22 +1,21 @@
 package dev.yasint.regexsynth.ast;
 
 import dev.yasint.regexsynth.core.Expression;
-import dev.yasint.regexsynth.core.Utility;
+import dev.yasint.regexsynth.util.Common;
 
 import java.util.*;
 
-import static dev.yasint.regexsynth.core.Constructs.*;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
 
 /**
  * Synthesis :: String minimization
  */
-public final class TrieStructure implements Expression {
+public final class TrieExpression implements Expression {
 
     // Initial node of the trie. (null - children)
     private final Node root = new Node();
 
-    TrieStructure() {
-    }
+    TrieExpression() { /*available for testing*/ }
 
     public void insert(final String word) {
         Node current = this.root;
@@ -41,7 +40,7 @@ public final class TrieStructure implements Expression {
         return this.root.toRegex();
     }
 
-    private static final class Node {
+    private static final class Node implements Expression {
 
         private final Map<String, Node> nodes;
 
@@ -49,7 +48,20 @@ public final class TrieStructure implements Expression {
             this.nodes = new TreeMap<>();
         }
 
-        private StringBuilder toRegex() {
+        private boolean containsKey(final String key) {
+            return this.nodes.containsKey(key);
+        }
+
+        private void put(final String c, final Node node) {
+            this.nodes.put(c, node);
+        }
+
+        private Node get(final String _char) {
+            return this.nodes.get(_char);
+        }
+
+        @Override
+        public StringBuilder toRegex() {
 
             if (this.nodes.containsKey("") && this.nodes.size() == 1) {
                 return null; // Terminate; final state
@@ -60,7 +72,7 @@ public final class TrieStructure implements Expression {
 
             boolean hasOptionals = false;
             for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
-                final String escaped = Utility.asRegexLiteral(entry.getKey());
+                final String escaped = Common.asRegexLiteral(entry.getKey());
                 if (entry.getValue() != null) {
                     final StringBuilder subExpression = entry.getValue().toRegex();
                     if (subExpression != null) {
@@ -114,18 +126,6 @@ public final class TrieStructure implements Expression {
 
             return expression;
 
-        }
-
-        private boolean containsKey(final String key) {
-            return this.nodes.containsKey(key);
-        }
-
-        private void put(final String c, final Node node) {
-            this.nodes.put(c, node);
-        }
-
-        private Node get(final String _char) {
-            return this.nodes.get(_char);
         }
 
     }

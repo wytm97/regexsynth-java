@@ -55,12 +55,12 @@ public final class RegexSynth {
     @SuppressWarnings("unused")
     public enum Flags {
 
-        // RE2 matches unicode by default
+        // RE2 matches unicode by default. We have dropped the disable unicode
+        // classes flag modifier due to other ports incompatibilities.
 
         CASE_INSENSITIVE(Pattern.CASE_INSENSITIVE), // false by default
-        MULTILINE(Pattern.MULTILINE), // false by default
-        DOTALL(Pattern.DOTALL), // false by default (matches \n)
-        DISABLE_UNICODE_GROUPS(Pattern.DISABLE_UNICODE_GROUPS); // false by default
+        MULTILINE(Pattern.MULTILINE), // false by default ^..$ effective
+        DOTALL(Pattern.DOTALL); // false by default (dot{anything()} matches \n)
 
         public final int val;
 

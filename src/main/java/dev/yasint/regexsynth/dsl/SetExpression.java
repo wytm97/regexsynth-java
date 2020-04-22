@@ -2,22 +2,23 @@ package dev.yasint.regexsynth.ast;
 
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.core.Expression;
-import dev.yasint.regexsynth.core.UnicodeScript;
+import dev.yasint.regexsynth.exceptions.InvalidCodepointException;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static dev.yasint.regexsynth.core.Constructs.*;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
 
 /**
  * Synthesis :: Regular Expression Set
- *
+ * <p>
  * This generates a regular expression set when given a range
  * or chars. This class handles the simple character class and
  * ranged character classes expressions along with set negation.
  */
-public final class RegexSet implements Expression {
+public final class SetExpression implements Expression {
 
     // Inside a set expression characters such as ^ ] / \ - " ' ` are invalid and
     // the expression will fail to compile. So, we check each element with this
@@ -31,7 +32,7 @@ public final class RegexSet implements Expression {
     private Set<Integer> codepoints; // This will be sorted in natural order
     private boolean negated; // Whether this is negated ^ or not @mutable
 
-    RegexSet(boolean negated) {
+    SetExpression(boolean negated) {
         this.negated = negated;
         this.codepoints = new TreeSet<>();
         this.unicodeClasses = new HashSet<>();
@@ -55,14 +56,14 @@ public final class RegexSet implements Expression {
     void addRange(final int codepointA, final int codepointB) {
         if (Character.isValidCodePoint(codepointA) && Character.isValidCodePoint(codepointB)) {
             if (codepointA > codepointB)
-                throw new IllegalArgumentException("character range is out of order");
+                throw new InvalidCodepointException("character range is out of order");
             if (codepointA == codepointB) {
                 codepoints.add(codepointA);
                 return;
             }
             for (int i = codepointA; i <= codepointB; i++) codepoints.add(i);
         } else {
-            throw new IllegalArgumentException("invalid codepoint");
+            throw new InvalidCodepointException("invalid codepoint");
         }
     }
 
@@ -87,7 +88,7 @@ public final class RegexSet implements Expression {
      * @param b set expression b
      * @return elements that belongs to this or b
      */
-    public RegexSet union(final RegexSet b) {
+    public SetExpression union(final SetExpression b) {
         if (b.negated) {
             this.codepoints.removeAll(b.codepoints);
         } else {
@@ -103,7 +104,7 @@ public final class RegexSet implements Expression {
      * @param b set expression b
      * @return elements that belongs to this and b
      */
-    public RegexSet intersection(final RegexSet b) {
+    public SetExpression intersection(final SetExpression b) {
         if (b.negated) {
             this.codepoints.removeAll(b.codepoints);
         } else {
@@ -119,7 +120,7 @@ public final class RegexSet implements Expression {
      * @param b set expression b
      * @return elements that belongs to this and not to b
      */
-    public RegexSet difference(final RegexSet b) {
+    public SetExpression difference(final SetExpression b) {
         if (!b.negated) b.negated = true;
         this.intersection(b);
         return this;
@@ -135,7 +136,7 @@ public final class RegexSet implements Expression {
      * @param block   valid unicode general category / script block
      * @return this
      */
-    public RegexSet withUnicodeClass(final UnicodeScript block, final boolean negated) {
+    public SetExpression withUnicodeClass(final UnicodeScript block, final boolean negated) {
         unicodeClasses.add(
                 Literals.unicodeClass(block, negated)
                         .toRegex().toString()
@@ -179,12 +180,12 @@ public final class RegexSet implements Expression {
         int rangeStartIndex = -1;
         boolean isInRange = false;
 
-        for (int i = 0; i < chars.length; i++) {
+        for (int curIndex = 0; curIndex < chars.length; curIndex++) {
             // Check if this can be a range
-            if (i + 1 < chars.length) {
-                if (chars[i + 1] - chars[i] == 1) {
+            if (curIndex + 1 < chars.length) {
+                if (chars[curIndex + 1] - chars[curIndex] == 1) {
                     if (!isInRange) {
-                        rangeStartIndex = i;
+                        rangeStartIndex = curIndex;
                         isInRange = true;
                     }
                     continue;
@@ -193,21 +194,21 @@ public final class RegexSet implements Expression {
             if (isInRange) {
                 // Check if the range is only within two characters.
                 // i.e. a-b then we can simplify it to [ab]
-                if (i - rangeStartIndex == 1 /*difference*/) {
+                if (curIndex - rangeStartIndex == 1 /*difference*/) {
                     expression
                             .append(toRegexInterpretable(chars[rangeStartIndex]))
-                            .append(toRegexInterpretable(chars[i]));
+                            .append(toRegexInterpretable(chars[curIndex]));
                 } else {
                     expression
                             .append(toRegexInterpretable(chars[rangeStartIndex]))
                             .append(HYPHEN)
-                            .append(toRegexInterpretable(chars[i]));
+                            .append(toRegexInterpretable(chars[curIndex]));
                 }
                 // Reset range starting back to initial
                 rangeStartIndex = -1;
                 isInRange = false;
             } else {
-                expression.append(toRegexInterpretable(chars[i]));
+                expression.append(toRegexInterpretable(chars[curIndex]));
             }
         }
 

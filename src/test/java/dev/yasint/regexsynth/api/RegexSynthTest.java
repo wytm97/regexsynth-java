@@ -68,7 +68,6 @@ public final class RegexSynthTest {
                 "((?:P[AE]|S(?:SE?|O))) ((?:68[0-5][0-9]{2}" +
                 "|6[0-7][0-9]{3}|59[0-9]{3}|58[5-9][0-9]{2}|58499)) ([0-9]+)";
 
-
         final Expression DATE = captureGroup(
                 integerRange(2010, 2020), literal("-"),
                 leadingZero(integerRange(1, 12)), literal("-"),

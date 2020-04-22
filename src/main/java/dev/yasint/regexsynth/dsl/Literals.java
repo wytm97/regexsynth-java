@@ -1,12 +1,12 @@
 package dev.yasint.regexsynth.ast;
 
 import dev.yasint.regexsynth.core.Expression;
-import dev.yasint.regexsynth.core.UnicodeScript;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
 
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.core.Constructs.*;
-import static dev.yasint.regexsynth.core.Utility.asRegexLiteral;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.util.Common.asRegexLiteral;
 
 public final class Literals {
 

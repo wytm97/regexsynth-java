@@ -1,11 +1,12 @@
 package dev.yasint.regexsynth.ast;
 
 import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.exceptions.QuantifierException;
 
 import java.util.Objects;
 
 import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.Constructs.*;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
 
 public final class Quantifiers {
 
@@ -76,10 +77,10 @@ public final class Quantifiers {
      */
     public static Expression exactly(final int times, final Expression expression) {
         if (times == 0) { // Causes the token to be ignored so inform the user,
-            throw new RuntimeException("redundant sub-sequence");
+            throw new QuantifierException("redundant sub-sequence");
         }
         if (times == 1) { // Redundant quantifier
-            throw new RuntimeException("redundant quantifier");
+            throw new QuantifierException("redundant quantifier");
         }
         return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
@@ -98,10 +99,14 @@ public final class Quantifiers {
      * @return quantified expression
      */
     public static Expression between(final int m, final int n, final Expression expression) {
-        if (m > n) throw new RuntimeException("quantifier range is out of order");
-        if (m == 0 && n == 0) throw new RuntimeException("redundant sub-sequence");
-        if (m == 0 && n == 1) return optional(expression);
-        if (m == 1 && n == 1) return expression;
+        if (m > n)
+            throw new QuantifierException("quantifier range is out of order");
+        if (m == 0 && n == 0)
+            throw new QuantifierException("redundant sub-sequence");
+        if (m == 0 && n == 1)
+            return optional(expression);
+        if (m == 1 && n == 1)
+            return expression;
         return () -> nonCaptureGroup(Objects.requireNonNull(expression))
                 .toRegex()
                 .append(OPEN_CURLY_BRACE)

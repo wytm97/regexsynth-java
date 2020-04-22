@@ -2,7 +2,7 @@ package dev.yasint.regexsynth.ast;
 
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.core.RegexSynth;
-import dev.yasint.regexsynth.core.UnicodeScript;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
 import org.junit.Test;
 
 import static dev.yasint.regexsynth.ast.Literals.*;

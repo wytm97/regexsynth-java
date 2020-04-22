@@ -1,10 +1,11 @@
 package dev.yasint.regexsynth.ast;
 
 import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.exceptions.NumericRangeException;
 
 import static dev.yasint.regexsynth.ast.CharClasses.rangedSet;
 import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.Constructs.QUESTION_MARK;
+import static dev.yasint.regexsynth.core.RegexConstructs.QUESTION_MARK;
 
 public final class Numeric {
 
@@ -33,13 +34,16 @@ public final class Numeric {
      * @return range expression
      */
     public static Expression integerRange(final int from, final int to) {
-        if (from > to) throw new RuntimeException("integer range is out of order");
-        if (from == to) return Literals.literal(String.valueOf(from));
-        if (from >= 0 && to <= 9) return rangedSet(String.valueOf(from), String.valueOf(to));
-        return nonCaptureGroup(() -> new StringBuilder(
-                new IntegerRange(from, to).create()
-        ));
+        if (from > to)
+            throw new NumericRangeException("integer range is out of order");
+        if (from == to)
+            return Literals.literal(String.valueOf(from));
+        if (from >= 0 && to <= 9)
+            return rangedSet(String.valueOf(from), String.valueOf(to));
+        return nonCaptureGroup(() -> new IntRangeExpression(from, to).toRegex());
     }
+
+    // Below methods are currently unsupported
 
     private static Expression binary() {
         throw new UnsupportedOperationException();

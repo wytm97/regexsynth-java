@@ -6,8 +6,8 @@ import dev.yasint.regexsynth.core.RegexSynth;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.core.Constructs.*;
-import static dev.yasint.regexsynth.core.Utility.asRegexGroupName;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
 
 /**
  * Contains all the grouping constructs supported by the
@@ -86,7 +86,7 @@ public final class Groups {
      * @param modifiers *
      * @return *
      */
-    private static Expression withInlineModifiers(final RegexSynth.Flags... modifiers) {
+    private static Expression withInlineModifiers(final Expression expression, final RegexSynth.Flags... modifiers) {
         // (?misU-misU:...) => default is -misU then add flags
         // before - separator. This should support remainder of the pattern
         // style where if you specify just (?misU) pattern applies

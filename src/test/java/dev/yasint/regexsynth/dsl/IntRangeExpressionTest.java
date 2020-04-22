@@ -7,7 +7,7 @@ import org.junit.Test;
 import static dev.yasint.regexsynth.ast.Numeric.integerRange;
 import static org.junit.Assert.assertTrue;
 
-public final class IntegerRangeTest {
+public final class IntRangeExpressionTest {
 
     @Test
     public void itShouldReturnExpectedRange() {

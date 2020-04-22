@@ -2,52 +2,52 @@ package dev.yasint.regexsynth.ast;
 
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.core.RegexSynth;
-import dev.yasint.regexsynth.core.UnicodeScript;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
 import org.junit.Test;
 
 import static dev.yasint.regexsynth.ast.CharClasses.*;
 import static org.junit.Assert.assertEquals;
 
-public final class RegexSetTest {
+public final class SetExpressionTest {
 
     @Test
     public void itShouldCreateANonNegatedCharacterClass() {
-        final RegexSet simpleSet = simpleSet("A", "B", "D", "E", "C");
+        final SetExpression simpleSet = simpleSet("A", "B", "D", "E", "C");
         assertEquals(simpleSet.toRegex().toString(), "[A-E]");
     }
 
     @Test
     public void itShouldCreateANegatedCharacterClass() {
-        final RegexSet simpleSet = negated(simpleSet("a", "b", "c", "d", "Z"));
+        final SetExpression simpleSet = negated(simpleSet("a", "b", "c", "d", "Z"));
         assertEquals(simpleSet.toRegex().toString(), "[^Za-d]");
     }
 
     @Test
     public void itShouldCreateASimpleCharacterClassWithoutRanges() {
-        final RegexSet simpleSet = simpleSet("a", "d", "f", "h", "Z");
+        final SetExpression simpleSet = simpleSet("a", "d", "f", "h", "Z");
         assertEquals(simpleSet.toRegex().toString(), "[Zadfh]");
     }
 
     @Test
     public void itShouldDoASetUnionOperationOnTwoSets() {
-        final RegexSet rangedSet = rangedSet("A", "Z");
-        final RegexSet simpleSet = simpleSet("a", "d", "f", "h", "Z");
+        final SetExpression rangedSet = rangedSet("A", "Z");
+        final SetExpression simpleSet = simpleSet("a", "d", "f", "h", "Z");
         rangedSet.union(simpleSet); // Will mutate the rangedSet
         assertEquals(rangedSet.toRegex().toString(), "[A-Zadfh]");
     }
 
     @Test
     public void itShouldDoASetIntersectionOperationOnTwoSets() {
-        final RegexSet setA = rangedSet("A", "Z").union(rangedSet("a", "z"));
-        final RegexSet setB = simpleSet("d", "e", "f");
+        final SetExpression setA = rangedSet("A", "Z").union(rangedSet("a", "z"));
+        final SetExpression setB = simpleSet("d", "e", "f");
         setA.intersection(setB);
         assertEquals(setA.toRegex().toString(), "[d-f]");
     }
 
     @Test
     public void itShouldDoADifferenceOperationOnTwoSets() {
-        final RegexSet setA = rangedSet("A", "Z").union(rangedSet("a", "z"));
-        final RegexSet setB = rangedSet("M", "P").union(rangedSet("m", "p"));
+        final SetExpression setA = rangedSet("A", "Z").union(rangedSet("a", "z"));
+        final SetExpression setB = rangedSet("M", "P").union(rangedSet("m", "p"));
         setA.difference(setB);
         assertEquals(setA.toRegex().toString(), "[A-LQ-Za-lq-z]");
     }

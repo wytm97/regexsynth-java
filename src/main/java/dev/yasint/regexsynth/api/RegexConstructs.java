@@ -1,6 +1,6 @@
 package dev.yasint.regexsynth.core;
 
-public final class Constructs {
+public final class RegexConstructs {
 
     /* Special Characters */
     public static final Character BACKSLASH = '\\';

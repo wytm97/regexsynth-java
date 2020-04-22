@@ -4,7 +4,7 @@ import dev.yasint.regexsynth.core.Expression;
 
 import java.util.Arrays;
 
-import static dev.yasint.regexsynth.core.Constructs.*;
+import static dev.yasint.regexsynth.core.RegexConstructs.*;
 
 /**
  * This class contains all the anchors/boundary matchers that
