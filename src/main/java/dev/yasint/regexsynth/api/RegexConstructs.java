@@ -1,4 +1,4 @@
-package dev.yasint.regexsynth.core;
+package dev.yasint.regexsynth.api;
 
 public final class RegexConstructs {
 

@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import dev.yasint.regexsynth.util.Common;
 import dev.yasint.regexsynth.exceptions.SetElementException;
 
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.PERIOD;
+import static dev.yasint.regexsynth.api.RegexConstructs.PERIOD;
 
 /**
  * Contains all the set constructs and character classes.
@@ -17,7 +17,7 @@ public final class CharClasses {
 
     /**
      * Matches any character, possibly including newline \n if
-     * the 's' {@link dev.yasint.regexsynth.core.RegexSynth.Flags}
+     * the 's' {@link dev.yasint.regexsynth.api.RegexSynth.Flags}
      * DOTALL flag is turned on.
      *
      * @return match anything
@@ -288,6 +288,10 @@ public final class CharClasses {
 
     }
 
+    /**
+     * Escape sequences. These classes can be applied inside
+     * set expressions or outside set expressions.
+     */
     public static class EscapeSequences {
 
         public static SetExpression space() {
@@ -332,7 +336,7 @@ public final class CharClasses {
         }
 
         public static SetExpression formfeed() {
-            return simpleSet(0x0C); // \v
+            return simpleSet(0x0C); // \f
         }
 
         public static SetExpression carriageReturn() {

@@ -1,4 +1,4 @@
-package dev.yasint.regexsynth.core;
+package dev.yasint.regexsynth.api;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 public final class RegexSynth {
 
     private String expression;
+    private Pattern pattern;
 
     /**
      * Creates a complete regular expression. It combines
@@ -46,13 +47,23 @@ public final class RegexSynth {
      * @param flags global modifiers
      * @return Re2J Pattern instance
      */
-    public Pattern compile(final Flags... flags) {
+    public RegexSynth compile(final Flags... flags) {
         int fl = 0;
         for (final Flags flag : flags) fl += flag.val;
-        return Pattern.compile(this.expression, fl);
+        this.pattern = Pattern.compile(this.expression, fl);
+        return this;
     }
 
-    @SuppressWarnings("unused")
+    public Pattern getPattern() {
+        if (this.pattern == null)
+            throw new NullPointerException("pattern instance is null. invoke compile(Flags...)");
+        return pattern;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
     public enum Flags {
 
         // RE2 matches unicode by default. We have dropped the disable unicode

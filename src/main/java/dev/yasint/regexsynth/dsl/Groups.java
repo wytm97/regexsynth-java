@@ -1,12 +1,12 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
-import dev.yasint.regexsynth.core.RegexSynth;
+import dev.yasint.regexsynth.api.Expression;
+import dev.yasint.regexsynth.api.RegexSynth;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
 
 /**

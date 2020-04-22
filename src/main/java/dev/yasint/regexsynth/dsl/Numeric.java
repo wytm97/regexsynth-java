@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.exceptions.NumericRangeException;
 
-import static dev.yasint.regexsynth.ast.CharClasses.rangedSet;
-import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.RegexConstructs.QUESTION_MARK;
+import static dev.yasint.regexsynth.dsl.CharClasses.rangedSet;
+import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
+import static dev.yasint.regexsynth.api.RegexConstructs.QUESTION_MARK;
 
 public final class Numeric {
 
@@ -40,7 +40,7 @@ public final class Numeric {
             return Literals.literal(String.valueOf(from));
         if (from >= 0 && to <= 9)
             return rangedSet(String.valueOf(from), String.valueOf(to));
-        return nonCaptureGroup(() -> new IntRangeExpression(from, to).toRegex());
+        return nonCaptureGroup(() -> new RangeExpression(from, to).toRegex());
     }
 
     // Below methods are currently unsupported

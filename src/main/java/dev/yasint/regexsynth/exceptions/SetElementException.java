@@ -1,8 +1,8 @@
 package dev.yasint.regexsynth.exceptions;
 
-public class InvalidSetElementException extends RuntimeException {
+public class SetElementException extends RuntimeException {
 
-    public InvalidSetElementException(String message) {
+    public SetElementException(String message) {
         super(message);
     }
 

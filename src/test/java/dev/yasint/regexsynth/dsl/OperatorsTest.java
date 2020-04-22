@@ -1,13 +1,13 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.core.RegexSynth;
-import org.junit.Test;
+import dev.yasint.regexsynth.api.RegexSynth;
+import org.junit.jupiter.api.Test;
 
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
-import static dev.yasint.regexsynth.ast.Operators.concat;
-import static dev.yasint.regexsynth.ast.Operators.either;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.CharClasses.Posix.*;
+import static dev.yasint.regexsynth.dsl.Operators.concat;
+import static dev.yasint.regexsynth.dsl.Operators.either;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class OperatorsTest {
 
@@ -15,7 +15,7 @@ public final class OperatorsTest {
     public void itShouldCreateAlternationBetweenMultipleExpressions() {
         Pattern pattern = new RegexSynth(
                 either(digit(), uppercase(), lowercase())
-        ).compile();
+        ).compile().getPattern();
         assertEquals(pattern.pattern(), "(?:[0-9]|[A-Z]|[a-z])");
     }
 
@@ -23,7 +23,7 @@ public final class OperatorsTest {
     public void itShouldCreateAlternationBetweenMultipleStrings() {
         Pattern pattern = new RegexSynth(
                 either("http", "https", "ws", "wss")
-        ).compile();
+        ).compile().getPattern();
         assertEquals(pattern.pattern(), "(?:https?|wss?)");
     }
 
@@ -31,7 +31,7 @@ public final class OperatorsTest {
     public void itShouldConcatMultipleExpressionsIntoOne() {
         Pattern pattern = new RegexSynth(
                 concat(digit(), punctuation())
-        ).compile();
+        ).compile().getPattern();
         assertEquals(pattern.pattern(), "[0-9][!-\\/:-@[-\\`{-~]");
     }
 

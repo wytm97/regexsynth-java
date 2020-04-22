@@ -1,7 +1,5 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-public class TrieStructureTest {
-
-    TrieExpression s = new TrieExpression();
+public final class TrieStructureTest {
 
 }

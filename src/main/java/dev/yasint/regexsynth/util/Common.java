@@ -1,8 +1,9 @@
-package dev.yasint.regexsynth.core;
+package dev.yasint.regexsynth.util;
 
 import com.google.re2j.Pattern;
+import dev.yasint.regexsynth.exceptions.InvalidGroupNameException;
 
-public final class Utility {
+public final class Common {
 
     // This regular expression checks whether the capture group name
     // variable is valid. It cannot contain the following characters
@@ -46,7 +47,7 @@ public final class Utility {
      */
     public static String asRegexGroupName(final String name) {
         boolean valid = VALID_GROUP_NAME.matcher(name).matches();
-        if (!valid) throw new RuntimeException("invalid capture group name");
+        if (!valid) throw new InvalidGroupNameException("invalid capture group name");
         return name;
     }
 

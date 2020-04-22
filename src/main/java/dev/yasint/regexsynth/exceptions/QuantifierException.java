@@ -1,8 +1,8 @@
 package dev.yasint.regexsynth.exceptions;
 
-public class InvalidQuantifierException extends RuntimeException {
+public class QuantifierException extends RuntimeException {
 
-    public InvalidQuantifierException(String message) {
+    public QuantifierException(String message) {
         super(message);
     }
 

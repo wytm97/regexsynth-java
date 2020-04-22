@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
-import org.junit.Test;
+import dev.yasint.regexsynth.api.Expression;
+import org.junit.jupiter.api.Test;
 
-import static dev.yasint.regexsynth.ast.Numeric.integerRange;
-import static dev.yasint.regexsynth.ast.Numeric.leadingZero;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.Numeric.integerRange;
+import static dev.yasint.regexsynth.dsl.Numeric.leadingZero;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class NumericTest {
 

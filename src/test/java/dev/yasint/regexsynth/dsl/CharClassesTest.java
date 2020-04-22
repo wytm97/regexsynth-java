@@ -1,15 +1,15 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.core.RegexSynth;
-import org.junit.Test;
+import dev.yasint.regexsynth.api.RegexSynth;
+import org.junit.jupiter.api.Test;
 
-import static dev.yasint.regexsynth.ast.CharClasses.EscapeSequences.*;
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
-import static dev.yasint.regexsynth.ast.CharClasses.anything;
-import static dev.yasint.regexsynth.ast.CharClasses.rangedSet;
-import static dev.yasint.regexsynth.ast.Quantifiers.exactly;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.CharClasses.EscapeSequences.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.Posix.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.anything;
+import static dev.yasint.regexsynth.dsl.CharClasses.rangedSet;
+import static dev.yasint.regexsynth.dsl.Quantifiers.exactly;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class CharClassesTest {
 
@@ -17,7 +17,7 @@ public final class CharClassesTest {
     public void itShouldAppendMatchAnyCharacterAtPosition() {
         final Pattern expression = new RegexSynth(
                 exactly(5, anything())
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "(?:.){5}");
     }
 

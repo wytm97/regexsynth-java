@@ -1,25 +1,24 @@
-package dev.yasint.regexsynth.core;
+package dev.yasint.regexsynth.api;
 
 import com.google.re2j.Pattern;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Year;
 
-import static dev.yasint.regexsynth.ast.Anchors.exactLineMatch;
-import static dev.yasint.regexsynth.ast.Anchors.startOfLine;
-import static dev.yasint.regexsynth.ast.CharClasses.EscapeSequences.linebreak;
-import static dev.yasint.regexsynth.ast.CharClasses.EscapeSequences.space;
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.*;
-import static dev.yasint.regexsynth.ast.CharClasses.*;
-import static dev.yasint.regexsynth.ast.Groups.captureGroup;
-import static dev.yasint.regexsynth.ast.Groups.namedCaptureGroup;
-import static dev.yasint.regexsynth.ast.Literals.literal;
-import static dev.yasint.regexsynth.ast.Numeric.integerRange;
-import static dev.yasint.regexsynth.ast.Numeric.leadingZero;
-import static dev.yasint.regexsynth.ast.Operators.concat;
-import static dev.yasint.regexsynth.ast.Operators.either;
-import static dev.yasint.regexsynth.ast.Quantifiers.*;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.Anchors.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.EscapeSequences.linebreak;
+import static dev.yasint.regexsynth.dsl.CharClasses.EscapeSequences.space;
+import static dev.yasint.regexsynth.dsl.CharClasses.Posix.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.*;
+import static dev.yasint.regexsynth.dsl.Groups.captureGroup;
+import static dev.yasint.regexsynth.dsl.Groups.namedCaptureGroup;
+import static dev.yasint.regexsynth.dsl.Literals.literal;
+import static dev.yasint.regexsynth.dsl.Numeric.integerRange;
+import static dev.yasint.regexsynth.dsl.Numeric.leadingZero;
+import static dev.yasint.regexsynth.dsl.Operators.concat;
+import static dev.yasint.regexsynth.dsl.Operators.either;
+import static dev.yasint.regexsynth.dsl.Quantifiers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class RegexSynthTest {
 
@@ -47,7 +46,7 @@ public final class RegexSynthTest {
                         literal("-"), // Delimiter
                         captureGroup(leadingZero(integerRange(1, 31))) // Day - group 2
                 )
-        ).compile();
+        ).compile().getPattern();
 
         assertEquals(expression.pattern(), "^(?:2020|201[2-9])\\-((?:A(?:pr|ug)|Dec|Feb|" +
                 "J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\\-((?:0?(?:3[01]|[12][0-9]|[1-9])))$");
@@ -82,7 +81,7 @@ public final class RegexSynthTest {
         final Pattern expression = new RegexSynth(
                 DATE, DELIMITER, DEPARTMENT_CODE, DELIMITER,
                 ITEM_CODE, DELIMITER, ITEM_STOCK_COUNT
-        ).compile();
+        ).compile().getPattern();
 
     }
 
@@ -105,7 +104,7 @@ public final class RegexSynthTest {
                 DEPARTMENT_CODE, DELIMITER,
                 ITEM_STOCK_COUNT, DELIMITER,
                 DATE
-        ).compile();
+        ).compile().getPattern();
 
         // Matches any string in the set {K, S, KS, KLE, KLL}, followed by two asterisks
         // and 0 or 9 digit 3 times, followed by two asterisks, and matches date formats like 2020-11-31
@@ -151,10 +150,28 @@ public final class RegexSynthTest {
                         protocol, literal("://"), sub_domain, literal("."), tld,
                         port, optional(literal("/")), resource
                 )
-        ).compile();
+        ).compile().getPattern();
 
         assertEquals(expression.pattern(), "^(?P<protocol>(?:ftp|https?)):\\/\\/(?P<subDomain>(?:[\\-.0-9A-Za-z])+)" +
                 "\\.(?P<tld>(?:[A-Za-z]){2,4})(?:(?P<port>:(?:[0-9])+))?(?:\\/)?(?P<resource>(?:.)*)$");
+
+    }
+
+    @Test
+    public void itShouldCreateADoubleNumberMatchingExpression() {
+
+        // let's say we need to match all the double numbers
+        // from 0.000 to 1000.999 with three fraction digits
+
+        Pattern pattern = new RegexSynth(
+                exactWordBoundary(
+                        integerRange(0, 1000),
+                        literal("."),
+                        between(1, 3, digit())
+                )
+        ).compile().getPattern();
+
+        System.out.println(pattern.pattern());
 
     }
 
@@ -195,7 +212,7 @@ public final class RegexSynthTest {
                 zeroOrMoreTimes(anything()), // Anything in between
                 literal("*/"),
                 word()
-        ).compile(RegexSynth.Flags.DOTALL);
+        ).compile(RegexSynth.Flags.DOTALL).getPattern();
 
     }
 

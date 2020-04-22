@@ -1,10 +1,10 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 
 import java.util.Arrays;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 
 /**
  * This class contains all the anchors/boundary matchers that

@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.util.Common;
 
 import java.util.*;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 
 /**
  * Synthesis :: String minimization
@@ -17,6 +17,11 @@ public final class TrieExpression implements Expression {
 
     TrieExpression() { /*available for testing*/ }
 
+    /**
+     * Inserts one word into the trie. O(N) complexity
+     *
+     * @param word string input
+     */
     public void insert(final String word) {
         Node current = this.root;
         for (int i = 0; i < word.length(); ++i) {
@@ -30,6 +35,11 @@ public final class TrieExpression implements Expression {
         current.put("", null);
     }
 
+    /**
+     * Inserts a collection of words into the trie. O(N)
+     *
+     * @param words string inputs
+     */
     public void insertAll(final Collection<String> words) {
         for (String word : words)
             insert(word);
@@ -71,13 +81,19 @@ public final class TrieExpression implements Expression {
             final List<String> charClasses = new ArrayList<>();
 
             boolean hasOptionals = false;
+            // for each leaf node of this node (adjacent nodes)
             for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
+                // escape any special regular expression constructs is present
                 final String escaped = Common.asRegexLiteral(entry.getKey());
+                // if it's not a final state
                 if (entry.getValue() != null) {
+                    // get the leaf node's expression (depth-first check)
                     final StringBuilder subExpression = entry.getValue().toRegex();
                     if (subExpression != null) {
+                        // concat(a,b)
                         alternations.add(escaped + subExpression.toString());
                     } else {
+                        // or this a character class: jun,jul => ju[nl]
                         charClasses.add(escaped);
                     }
                 } else {

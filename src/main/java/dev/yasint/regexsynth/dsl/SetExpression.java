@@ -1,7 +1,7 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.exceptions.InvalidCodepointException;
 import dev.yasint.regexsynth.unicode.UnicodeScript;
 
@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 
 /**
  * Synthesis :: Regular Expression Set
- * <p>
+ *
  * This generates a regular expression set when given a range
  * or chars. This class handles the simple character class and
  * ranged character classes expressions along with set negation.

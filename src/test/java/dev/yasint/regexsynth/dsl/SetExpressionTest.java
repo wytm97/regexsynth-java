@@ -1,12 +1,12 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.core.RegexSynth;
+import dev.yasint.regexsynth.api.RegexSynth;
 import dev.yasint.regexsynth.unicode.UnicodeScript;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static dev.yasint.regexsynth.ast.CharClasses.*;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.CharClasses.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class SetExpressionTest {
 
@@ -56,7 +56,7 @@ public final class SetExpressionTest {
     public void itShouldDoASetUnionOperationOnInlineRegex() {
         Pattern expression = new RegexSynth(
                 rangedSet("1", "3").union(rangedSet("4", "6"))
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "[1-6]");
     }
 
@@ -64,7 +64,7 @@ public final class SetExpressionTest {
     public void itShouldDoASetIntersectionOperationOnInlineRegex() {
         Pattern expression = new RegexSynth(
                 rangedSet("1", "3").intersection(rangedSet("4", "6"))
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "");
     }
 
@@ -72,7 +72,7 @@ public final class SetExpressionTest {
     public void itShouldDoASetDifferenceOperationOnInlineRegex() {
         Pattern expression = new RegexSynth(
                 rangedSet("1", "3").difference(simpleSet("2", "4", "5", "6"))
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "[13]");
     }
 
@@ -80,7 +80,7 @@ public final class SetExpressionTest {
     public void itShouldAppendANonNegatedUnicodeClassesToASetExpression() {
         final Pattern expression = new RegexSynth(
                 simpleSet("-", ".").withUnicodeClass(UnicodeScript.SINHALA, false)
-        ).compile();
+        ).compile().getPattern();
         System.out.println(expression.pattern());
         assertEquals(expression.pattern(), "[\\-.\\p{Sinhala}]");
     }
@@ -89,7 +89,7 @@ public final class SetExpressionTest {
     public void itShouldAppendANegatedUnicodeClassesToASetExpression() {
         final Pattern expression = new RegexSynth(
                 simpleSet("-", ".").withUnicodeClass(UnicodeScript.SINHALA, true)
-        ).compile();
+        ).compile().getPattern();
         System.out.println(expression.pattern());
         assertEquals(expression.pattern(), "[\\-.\\P{Sinhala}]");
     }

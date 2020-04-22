@@ -1,12 +1,12 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.exceptions.QuantifierException;
 
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 
 public final class Quantifiers {
 

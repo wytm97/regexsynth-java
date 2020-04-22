@@ -1,24 +1,25 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
 import com.google.re2j.Pattern;
-import dev.yasint.regexsynth.core.RegexSynth;
-import org.junit.Test;
+import dev.yasint.regexsynth.api.RegexSynth;
+import org.junit.jupiter.api.Test;
 
-import static dev.yasint.regexsynth.ast.Anchors.*;
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.alphabetic;
-import static dev.yasint.regexsynth.ast.CharClasses.Posix.word;
-import static dev.yasint.regexsynth.ast.Groups.captureGroup;
-import static dev.yasint.regexsynth.ast.Literals.literal;
-import static dev.yasint.regexsynth.ast.Quantifiers.oneOrMoreTimes;
-import static org.junit.Assert.assertEquals;
+import static dev.yasint.regexsynth.dsl.Anchors.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.Posix.alphabetic;
+import static dev.yasint.regexsynth.dsl.CharClasses.Posix.word;
+import static dev.yasint.regexsynth.dsl.Groups.captureGroup;
+import static dev.yasint.regexsynth.dsl.Literals.literal;
+import static dev.yasint.regexsynth.dsl.Quantifiers.oneOrMoreTimes;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AnchorsTest {
 
     @Test
     public void itShouldAppendAWordBoundaryAtPosition() {
         final Pattern expression = new RegexSynth(
-                captureGroup(wordBoundary(), word())
-        ).compile();
+                captureGroup(wordBoundary()
+                        .debug(System.out::println), word())
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "(\\b[0-9A-Z_a-z])");
     }
 
@@ -27,7 +28,7 @@ public final class AnchorsTest {
         final Pattern expression = new RegexSynth(
                 nonWordBoundary(),
                 word()
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "\\B[0-9A-Z_a-z]");
     }
 
@@ -36,7 +37,7 @@ public final class AnchorsTest {
         final Pattern expression = new RegexSynth(
                 startOfLine(),
                 word()
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "^[0-9A-Z_a-z]");
     }
 
@@ -46,7 +47,7 @@ public final class AnchorsTest {
                 startOfLine(),
                 oneOrMoreTimes(word()),
                 endOfLine(false)
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "^(?:[0-9A-Z_a-z])+$");
     }
 
@@ -56,7 +57,7 @@ public final class AnchorsTest {
                 startOfLine(),
                 oneOrMoreTimes(word()),
                 endOfLine(true)
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "^(?:[0-9A-Z_a-z])+\\x0D?$");
     }
 
@@ -65,7 +66,7 @@ public final class AnchorsTest {
         final Pattern expression = new RegexSynth(
                 startOfText(),
                 word()
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "\\A[0-9A-Z_a-z]");
     }
 
@@ -74,7 +75,7 @@ public final class AnchorsTest {
         final Pattern expression = new RegexSynth(
                 word(),
                 endOfText()
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "[0-9A-Z_a-z]\\z");
     }
 
@@ -85,7 +86,7 @@ public final class AnchorsTest {
                         wordBoundary(),
                         word()
                 )
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "^\\b[0-9A-Z_a-z]$");
     }
 
@@ -97,7 +98,7 @@ public final class AnchorsTest {
                         oneOrMoreTimes(alphabetic()),
                         literal("p")
                 )
-        ).compile();
+        ).compile().getPattern();
         assertEquals(expression.pattern(), "\\bp(?:[A-Za-z])+p\\b");
     }
 

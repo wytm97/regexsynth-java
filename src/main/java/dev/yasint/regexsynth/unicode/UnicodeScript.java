@@ -1,4 +1,4 @@
-package dev.yasint.regexsynth.core;
+package dev.yasint.regexsynth.unicode;
 
 /**
  * Adds typings for supported unicode scripts in RE2. Java does

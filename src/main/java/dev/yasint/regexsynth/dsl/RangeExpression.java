@@ -1,24 +1,24 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static dev.yasint.regexsynth.core.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.RegexConstructs.*;
 
 /**
  * Synthesis :: Regular Expression Integer Range
- * <p>
+ *
  * This generates a regular expression number range given
  * inclusive start and end integers. This implementation's
  * running time is O(log n).
- * <p>
+ *
  * This code is originally based on a StackOverflow post answer.
  * However, the code has some optimizations and changes to match
  * our use-case. `https://bit.ly/3bIXZBy`
  */
-public final class IntRangeExpression implements Expression {
+public final class RangeExpression implements Expression {
 
     private final int _rStart;
     private final int _rEnd;
@@ -29,7 +29,7 @@ public final class IntRangeExpression implements Expression {
      * @param _rStart int start inclusive
      * @param _rEnd   int end inclusive
      */
-    IntRangeExpression(int _rStart, int _rEnd) {
+    RangeExpression(int _rStart, int _rEnd) {
         this._rStart = _rStart;
         this._rEnd = _rEnd;
     }

@@ -1,6 +1,6 @@
-package dev.yasint.regexsynth.ast;
+package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static dev.yasint.regexsynth.ast.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.core.RegexConstructs.ALTERNATION;
+import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
+import static dev.yasint.regexsynth.api.RegexConstructs.ALTERNATION;
 
 public final class Operators {
 

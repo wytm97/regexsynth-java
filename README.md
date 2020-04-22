@@ -150,7 +150,7 @@ RegexSynth allows you to define custom expressions to create reusable expression
 
 ```java
 import java.time.Year;
-import dev.yasint.regexsynth.core.Expression;
+import dev.yasint.regexsynth.api.Expression;
 // import other nececessary lambda function literals
 
 public class ISODateFormat implements Expression {

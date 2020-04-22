@@ -1,8 +1,8 @@
 package dev.yasint.regexsynth.exceptions;
 
-public class InvalidNumberRangeException extends RuntimeException {
+public class NumericRangeException extends RuntimeException {
 
-    public InvalidNumberRangeException(String message) {
+    public NumericRangeException(String message) {
         super(message);
     }
 
