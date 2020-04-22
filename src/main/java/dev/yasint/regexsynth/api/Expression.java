@@ -18,8 +18,11 @@ public interface Expression {
      * The implementing class can control what should be in the
      * regex by simply wrapping it in a object or a functional template.
      *
-     * Example:
+     * Example 1:
      * regexConstruct(param1, param2) => Expression
+     *
+     * Example 2:
+     * public class RegexConstruct implements Expression { ... }
      *
      * @return regex equivalent
      * @since 1.0.0
