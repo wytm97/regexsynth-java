@@ -1,6 +1,6 @@
 package dev.yasint.regexsynth.api;
 
-public final class RegexConstructs {
+public final class MetaCharacters {
 
     /* Special Characters */
     public static final Character BACKSLASH = '\\';
@@ -34,6 +34,7 @@ public final class RegexConstructs {
 
     /* Logical operators */
     public static final String ALTERNATION = "|";
+    // Concatenation is just appending two strings...
 
     /* Groups */
     public static final String NAMED_CAPTURE_GROUP_PREFIX = "P";

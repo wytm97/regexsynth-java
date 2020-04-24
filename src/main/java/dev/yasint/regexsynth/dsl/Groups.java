@@ -1,12 +1,11 @@
 package dev.yasint.regexsynth.dsl;
 
 import dev.yasint.regexsynth.api.Expression;
-import dev.yasint.regexsynth.api.RegexSynth;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
 
 /**
@@ -78,20 +77,6 @@ public final class Groups {
                                 .append(GREATER_THAN),
                         StringBuilder::append
                 ).append(PAREN_CLOSE);
-    }
-
-    /**
-     * TODO: in a future release
-     *
-     * @param modifiers *
-     * @return *
-     */
-    private static Expression withInlineModifiers(final Expression expression, final RegexSynth.Flags... modifiers) {
-        // (?misU-misU:...) => default is -misU then add flags
-        // before - separator. This should support remainder of the pattern
-        // style where if you specify just (?misU) pattern applies
-        // it to the rest but can be overriden by nested-capturing groups.
-        throw new UnsupportedOperationException();
     }
 
 }

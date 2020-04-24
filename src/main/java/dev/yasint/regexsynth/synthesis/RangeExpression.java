@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.dsl;
+package dev.yasint.regexsynth.synthesis;
 
 import dev.yasint.regexsynth.api.Expression;
 
 import java.util.Collections;
 import java.util.LinkedList;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
  * Synthesis :: Regular Expression Integer Range
@@ -29,7 +29,7 @@ public final class RangeExpression implements Expression {
      * @param _rStart int start inclusive
      * @param _rEnd   int end inclusive
      */
-    RangeExpression(int _rStart, int _rEnd) {
+    public RangeExpression(int _rStart, int _rEnd) {
         this._rStart = _rStart;
         this._rEnd = _rEnd;
     }

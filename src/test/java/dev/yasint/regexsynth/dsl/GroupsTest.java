@@ -6,6 +6,7 @@ import dev.yasint.regexsynth.exceptions.InvalidGroupNameException;
 import org.junit.jupiter.api.Test;
 
 import static dev.yasint.regexsynth.dsl.CharClasses.Posix.*;
+import static dev.yasint.regexsynth.dsl.CharClasses.union;
 import static dev.yasint.regexsynth.dsl.Groups.namedCaptureGroup;
 import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,9 +17,7 @@ public final class GroupsTest {
     @Test
     public void itShouldCreateANonCapturingGroup() {
         final Pattern pattern = new RegexSynth(
-                nonCaptureGroup(
-                        digit()
-                )
+                nonCaptureGroup(digit())
         ).compile().getPattern();
         assertEquals(pattern.pattern(), "(?:[0-9])");
     }
@@ -26,9 +25,7 @@ public final class GroupsTest {
     @Test
     public void itShouldCreateACapturingGroup() {
         final Pattern pattern = new RegexSynth(
-                nonCaptureGroup(
-                        digit().union(punctuation())
-                )
+                nonCaptureGroup(union(digit(), punctuation()))
         ).compile().getPattern();
         assertEquals(pattern.pattern(), "(?:[!-@[-\\`{-~])");
     }
@@ -36,9 +33,7 @@ public final class GroupsTest {
     @Test
     public void itShouldCreateANamedCaptureGroup() {
         final Pattern pattern = new RegexSynth(
-                namedCaptureGroup("someName",
-                        word().union(punctuation())
-                )
+                namedCaptureGroup("someName", union(word(), punctuation()))
         ).compile().getPattern();
         assertEquals(pattern.pattern(), "(?P<someName>[!-~])");
     }
@@ -47,7 +42,10 @@ public final class GroupsTest {
     public void itShouldThrowAnExceptionIfTheNamedCaptureGroupNameIsInvalid() {
         assertThrows(
                 InvalidGroupNameException.class,
-                () -> namedCaptureGroup("- 902 someName", word().union(punctuation())).toRegex()
+                () -> namedCaptureGroup(
+                        "- 902 someName",
+                        union(word(), punctuation())
+                ).toRegex()
         );
     }
 

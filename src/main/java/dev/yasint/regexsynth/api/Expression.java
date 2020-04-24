@@ -16,7 +16,8 @@ public interface Expression {
     /**
      * Synthesizes a given specification into a regular expression.
      * The implementing class can control what should be in the
-     * regex by simply wrapping it in a object or a functional template.
+     * regex by simply wrapping it in a object or a higher-order
+     * function.
      *
      * @return regex equivalent
      * @since 1.0.0

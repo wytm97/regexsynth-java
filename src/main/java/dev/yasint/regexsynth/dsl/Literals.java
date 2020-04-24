@@ -5,7 +5,7 @@ import dev.yasint.regexsynth.unicode.UnicodeScript;
 
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 import static dev.yasint.regexsynth.util.Common.asRegexLiteral;
 
 public final class Literals {
@@ -48,7 +48,7 @@ public final class Literals {
      * @param negated whether the block is negated or not
      * @return unicode character block
      */
-    public static Expression unicodeClass(final UnicodeScript block, final boolean negated) {
+    public static Expression unicodeScriptLiteral(final UnicodeScript block, final boolean negated) {
         final String blockName = Objects.requireNonNull(block).getBlock();
         final StringBuilder expression = new StringBuilder();
         if (blockName.length() == 1) {

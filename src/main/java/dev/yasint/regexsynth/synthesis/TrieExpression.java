@@ -1,11 +1,11 @@
-package dev.yasint.regexsynth.dsl;
+package dev.yasint.regexsynth.synthesis;
 
 import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.util.Common;
 
 import java.util.*;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
  * Synthesis :: String minimization
@@ -15,7 +15,7 @@ public final class TrieExpression implements Expression {
     // Initial node of the trie. (null - children)
     private final Node root = new Node();
 
-    TrieExpression() { /*available for testing*/ }
+    public TrieExpression() { /*available for testing*/ }
 
     /**
      * Inserts one word into the trie. O(N) complexity

@@ -9,7 +9,7 @@ import static dev.yasint.regexsynth.dsl.CharClasses.Posix.alphabetic;
 import static dev.yasint.regexsynth.dsl.CharClasses.Posix.word;
 import static dev.yasint.regexsynth.dsl.Groups.captureGroup;
 import static dev.yasint.regexsynth.dsl.Literals.literal;
-import static dev.yasint.regexsynth.dsl.Quantifiers.oneOrMoreTimes;
+import static dev.yasint.regexsynth.dsl.Repetition.oneOrMoreTimes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class AnchorsTest {

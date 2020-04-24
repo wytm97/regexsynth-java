@@ -1,6 +1,7 @@
 package dev.yasint.regexsynth.dsl;
 
 import dev.yasint.regexsynth.api.Expression;
+import dev.yasint.regexsynth.synthesis.TrieExpression;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -9,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
-import static dev.yasint.regexsynth.api.RegexConstructs.ALTERNATION;
+import static dev.yasint.regexsynth.api.MetaCharacters.ALTERNATION;
 
 public final class Operators {
 

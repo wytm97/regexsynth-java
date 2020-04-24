@@ -1,5 +1,7 @@
 package dev.yasint.regexsynth.unicode;
 
+import dev.yasint.regexsynth.api.Expression;
+
 /**
  * Adds typings for supported unicode scripts in RE2. Java does
  * has these typings in {@link Character.UnicodeScript}

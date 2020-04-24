@@ -4,7 +4,7 @@ import dev.yasint.regexsynth.api.Expression;
 
 import java.util.Arrays;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
  * This class contains all the anchors/boundary matchers that
@@ -28,8 +28,7 @@ public final class Anchors {
      * @return boundary expression \b
      */
     public static Expression wordBoundary() {
-        return () -> new StringBuilder(2)
-                .append(WORD_BOUNDARY);
+        return () -> new StringBuilder(2).append(WORD_BOUNDARY);
     }
 
     /**
@@ -40,8 +39,7 @@ public final class Anchors {
      * @return non-boundary expression \B
      */
     public static Expression nonWordBoundary() {
-        return () -> new StringBuilder(2)
-                .append(NON_WORD_BOUNDARY);
+        return () -> new StringBuilder(2).append(NON_WORD_BOUNDARY);
     }
 
     /**
@@ -54,8 +52,7 @@ public final class Anchors {
      * @return expression start of line ^
      */
     public static Expression startOfLine() {
-        return () -> new StringBuilder(1)
-                .append(CARAT);
+        return () -> new StringBuilder(1).append(CARAT);
     }
 
     /**
@@ -82,8 +79,7 @@ public final class Anchors {
      * @return expression \A absolute start
      */
     public static Expression startOfText() {
-        return () -> new StringBuilder(2)
-                .append(BEGINNING_OF_TEXT);
+        return () -> new StringBuilder(2).append(BEGINNING_OF_TEXT);
     }
 
     /**

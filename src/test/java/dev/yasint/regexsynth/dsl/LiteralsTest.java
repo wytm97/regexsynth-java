@@ -29,7 +29,7 @@ public final class LiteralsTest {
     @Test
     public void itShouldCreateANonNegatedUnicodeScriptBlock() {
         Pattern pattern = new RegexSynth(
-                unicodeClass(UnicodeScript.SINHALA, false)
+                unicodeScriptLiteral(UnicodeScript.SINHALA, false)
         ).compile().getPattern();
         assertEquals(pattern.pattern(), "\\p{Sinhala}");
     }
@@ -37,7 +37,7 @@ public final class LiteralsTest {
     @Test
     public void itShouldCreateANegatedUnicodeScriptBlock() {
         Pattern pattern = new RegexSynth(
-                unicodeClass(UnicodeScript.ARMENIAN, true)
+                unicodeScriptLiteral(UnicodeScript.ARMENIAN, true)
         ).compile().getPattern();
         assertEquals(pattern.pattern(), "\\P{Armenian}");
     }

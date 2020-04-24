@@ -1,4 +1,4 @@
-package dev.yasint.regexsynth.dsl;
+package dev.yasint.regexsynth.synthesis;
 
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.api.RegexSynth;

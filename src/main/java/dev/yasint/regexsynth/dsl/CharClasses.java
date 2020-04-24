@@ -1,11 +1,16 @@
 package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.util.Common;
+import dev.yasint.regexsynth.api.Expression;
+import dev.yasint.regexsynth.exceptions.GenericException;
 import dev.yasint.regexsynth.exceptions.SetElementException;
+import dev.yasint.regexsynth.synthesis.SetExpression;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
+import dev.yasint.regexsynth.util.Common;
 
 import java.util.Objects;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.PERIOD;
+import static dev.yasint.regexsynth.api.MetaCharacters.PERIOD;
+import static dev.yasint.regexsynth.util.Common.isNotASetExpression;
 
 /**
  * Contains all the set constructs and character classes.
@@ -22,21 +27,57 @@ public final class CharClasses {
      *
      * @return match anything
      */
-    public static SetExpression anything() {
+    public static Expression anything() {
         return simpleSet(PERIOD);
     }
 
+    // Set Operations
+
     /**
      * Simply converts a given set to a negated character class.
-     * <code>[^acd]</code>
+     * <code>[^acd]</code>. This is a impure function. Because
+     * it mutates the source set.
      *
      * @param set source set to convert
      * @return negated set expression
      */
-    public static SetExpression negated(final SetExpression set) {
-        set.negate();
+    public static Expression negated(final Expression set) {
+        if (isNotASetExpression(set)) {
+            throw new GenericException("must be a set expression");
+        }
+        ((SetExpression) set).negate();
         return set;
     }
+
+    public static Expression union(final Expression setA, final Expression setB) {
+        if (isNotASetExpression(setA) || isNotASetExpression(setB)) {
+            throw new GenericException("union only supported for set expressions");
+        }
+        return ((SetExpression) setA).union((SetExpression) setB);
+    }
+
+    public static Expression difference(final Expression setA, final Expression setB) {
+        if (isNotASetExpression(setA) || isNotASetExpression(setB)) {
+            throw new GenericException("difference only supported for set expressions");
+        }
+        return ((SetExpression) setA).difference((SetExpression) setB);
+    }
+
+    public static Expression intersection(final Expression setA, final Expression setB) {
+        if (isNotASetExpression(setA) || isNotASetExpression(setB)) {
+            throw new GenericException("intersection only supported for set expressions");
+        }
+        return ((SetExpression) setA).intersection((SetExpression) setB);
+    }
+
+    public static Expression includeUnicodeScript(final Expression set, final UnicodeScript script, final boolean negated) {
+        if (isNotASetExpression(set)) {
+            throw new GenericException("includeUnicodeScript only supported for set expressions");
+        }
+        return ((SetExpression) set).withUnicodeClass(script, negated);
+    }
+
+    // Set Construction
 
     /**
      * Creates a ranged regex charclass. i.e. [A-Z]
@@ -45,7 +86,7 @@ public final class CharClasses {
      * @param to   ending char inclusive (surrogates or bmp)
      * @return set expression
      */
-    public static SetExpression rangedSet(final String from, final String to) {
+    public static Expression rangedSet(final String from, final String to) {
         if (from == null || to == null)
             throw new SetElementException("set range elements cannot be null");
         final SetExpression set = new SetExpression(false);
@@ -60,7 +101,7 @@ public final class CharClasses {
      * @param codepointB ending codepoint inclusive
      * @return set expression
      */
-    public static SetExpression rangedSet(final int codepointA, final int codepointB) {
+    public static Expression rangedSet(final int codepointA, final int codepointB) {
         final SetExpression set = new SetExpression(false);
         set.addRange(codepointA, codepointB);
         return set;
@@ -75,7 +116,7 @@ public final class CharClasses {
      * @param characters characters (surrogates or bmp)
      * @return set expression
      */
-    public static SetExpression simpleSet(final String... characters) {
+    public static Expression simpleSet(final String... characters) {
         final SetExpression set = new SetExpression(false);
         for (final String c : Objects.requireNonNull(characters)) {
             if (c.length() > 2) {
@@ -92,12 +133,14 @@ public final class CharClasses {
      * @param codepoints codepoints
      * @return set expression
      */
-    public static SetExpression simpleSet(final int... codepoints) {
+    public static Expression simpleSet(final int... codepoints) {
         final SetExpression set = new SetExpression(false);
         for (final int c : Objects.requireNonNull(codepoints))
             set.addChar(c);
         return set;
     }
+
+    // Pre-defined character classes and escape sequences.
 
     /**
      * Posix character classes. This class also include the
@@ -112,7 +155,7 @@ public final class CharClasses {
          *
          * @return lowercase charclass
          */
-        public static SetExpression lowercase() {
+        public static Expression lowercase() {
             return rangedSet("a", "z");
         }
 
@@ -123,7 +166,7 @@ public final class CharClasses {
          *
          * @return uppercase charclass
          */
-        public static SetExpression uppercase() {
+        public static Expression uppercase() {
             return rangedSet("A", "Z");
         }
 
@@ -132,7 +175,7 @@ public final class CharClasses {
          *
          * @return ascii charset
          */
-        public static SetExpression ascii() {
+        public static Expression ascii() {
             return rangedSet(0x00, 0x7F);
         }
 
@@ -141,7 +184,7 @@ public final class CharClasses {
          *
          * @return ascii charset
          */
-        public static SetExpression ascii2() {
+        public static Expression ascii2() {
             return rangedSet(0x00, 0xFF);
         }
 
@@ -151,9 +194,8 @@ public final class CharClasses {
          *
          * @return alphabetic charclass
          */
-        public static SetExpression alphabetic() {
-            return lowercase()
-                    .union(uppercase());
+        public static Expression alphabetic() {
+            return union(lowercase(), uppercase());
         }
 
         /**
@@ -162,7 +204,7 @@ public final class CharClasses {
          *
          * @return numeric charclass
          */
-        public static SetExpression digit() {
+        public static Expression digit() {
             return rangedSet("0", "9");
         }
 
@@ -172,7 +214,7 @@ public final class CharClasses {
          *
          * @return numeric charclass
          */
-        public static SetExpression notDigit() {
+        public static Expression notDigit() {
             return negated(digit());
         }
 
@@ -181,8 +223,8 @@ public final class CharClasses {
          *
          * @return alphanumeric charclass
          */
-        public static SetExpression alphanumeric() {
-            return alphabetic().union(digit());
+        public static Expression alphanumeric() {
+            return union(alphabetic(), digit());
         }
 
         /**
@@ -191,7 +233,7 @@ public final class CharClasses {
          *
          * @return punctuation charclass
          */
-        public static SetExpression punctuation() {
+        public static Expression punctuation() {
             final String elements = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
             return simpleSet(elements.split("")/*split into char*/);
         }
@@ -202,8 +244,8 @@ public final class CharClasses {
          *
          * @return graphical charclass
          */
-        public static SetExpression graphical() {
-            return alphanumeric().union(punctuation());
+        public static Expression graphical() {
+            return union(alphanumeric(), punctuation());
         }
 
         /**
@@ -212,8 +254,8 @@ public final class CharClasses {
          *
          * @return printable charclass
          */
-        public static SetExpression printable() {
-            return graphical().union(simpleSet(0x20/*space*/));
+        public static Expression printable() {
+            return union(graphical(), simpleSet(0x20/*space*/));
         }
 
         /**
@@ -222,7 +264,7 @@ public final class CharClasses {
          *
          * @return blank-space charclass
          */
-        public static SetExpression blank() {
+        public static Expression blank() {
             return simpleSet(0x09/*h-tab*/, 0x20/*space*/);
         }
 
@@ -231,10 +273,11 @@ public final class CharClasses {
          *
          * @return hex charclass
          */
-        public static SetExpression hexDigit() {
-            return digit()
-                    .union(rangedSet("a", "f"))
-                    .union(rangedSet("A", "F"));
+        public static Expression hexDigit() {
+            return union(
+                    rangedSet("A", "F"),
+                    union(digit(), rangedSet("a", "f"))
+            );
         }
 
         /**
@@ -244,19 +287,19 @@ public final class CharClasses {
          *
          * @return white space charclass
          */
-        public static SetExpression whitespace() {
+        public static Expression whitespace() {
             // following codepoints as [ \t\n\v\f\r] 0x0B == \v
             return simpleSet(0x20, 0x9, 0xA, 0xB, 0xC, 0xD);
         }
 
         /**
-         * Constructs an negated white space characters charclass.
+         * Constructs an negated whitespace characters charclass.
          * This simple class includes [^ \t\n\v\f\r] . This is
          * equivalent to \S in some regex flavors.
          *
          * @return negated whitespace charclass
          */
-        public static SetExpression notWhitespace() {
+        public static Expression notWhitespace() {
             // following codepoints as [^ \t\n\v\f\r] 0x0B == \v
             // in some languages, including java.
             return negated(whitespace());
@@ -268,22 +311,28 @@ public final class CharClasses {
          *
          * @return word charclass
          */
-        public static SetExpression word() {
-            return alphanumeric().union(simpleSet("_"));
+        public static Expression word() {
+            return union(alphanumeric(), simpleSet("_"));
         }
 
         /**
-         * Constructs an negated  word char class equivalent to \W
+         * Constructs an negated word char class equivalent to \W
          * which includes [^0-9A-Za-z_]
          *
          * @return negated word charclass
          */
-        public static SetExpression notWord() {
+        public static Expression notWord() {
             return negated(word());
         }
 
-        public static SetExpression control() {
-            return null;
+        /**
+         * Constructs an ISO control character class. Equivalent
+         * to [[:cntrl:]] in RE2
+         *
+         * @return control charclass
+         */
+        public static Expression control() {
+            return union(rangedSet(0x0, 0x1F), simpleSet(0x7f));
         }
 
     }
@@ -294,52 +343,52 @@ public final class CharClasses {
      */
     public static class EscapeSequences {
 
-        public static SetExpression space() {
+        public static Expression space() {
             return simpleSet(" ");
         }
 
-        public static SetExpression backslash() {
+        public static Expression backslash() {
             return simpleSet("\\"); // \
         }
 
-        public static SetExpression doubleQuotes() {
+        public static Expression doubleQuotes() {
             return simpleSet("\""); // "
         }
 
-        public static SetExpression singleQuote() {
+        public static Expression singleQuote() {
             return simpleSet("'"); // '
         }
 
-        public static SetExpression backtick() {
+        public static Expression backtick() {
             return simpleSet("`"); // `
         }
 
-        public static SetExpression bell() {
+        public static Expression bell() {
             return simpleSet(0x07); // \a
         }
 
-        public static SetExpression horizontalTab() {
+        public static Expression horizontalTab() {
             // \h 	A horizontal whitespace character: [ \t\xA0\u1680\u180e\u2000-\u200a\u202f\u205f\u3000]
             // \H 	A non-horizontal whitespace character: [^\h]
             return simpleSet(0x09); // \t
         }
 
-        public static SetExpression linebreak() {
+        public static Expression linebreak() {
             return simpleSet(0x0A); // \n
         }
 
-        public static SetExpression verticalTab() {
+        public static Expression verticalTab() {
             // Re consider:
             // \v 	A vertical whitespace character: [\n\x0B\f\r\x85\u2028\u2029]
             // \V 	A non-vertical whitespace character: [^\v]
             return simpleSet(0x0B);
         }
 
-        public static SetExpression formfeed() {
+        public static Expression formfeed() {
             return simpleSet(0x0C); // \f
         }
 
-        public static SetExpression carriageReturn() {
+        public static Expression carriageReturn() {
             return simpleSet(0x0D); // \r
         }
 

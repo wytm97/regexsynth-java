@@ -1,7 +1,8 @@
-package dev.yasint.regexsynth.dsl;
+package dev.yasint.regexsynth.synthesis;
 
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.api.Expression;
+import dev.yasint.regexsynth.dsl.Literals;
 import dev.yasint.regexsynth.exceptions.InvalidCodepointException;
 import dev.yasint.regexsynth.unicode.UnicodeScript;
 
@@ -9,11 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static dev.yasint.regexsynth.api.RegexConstructs.*;
+import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
- * Synthesis :: Regular Expression Set
- *
+ * Synthesis :: Mutable Regular Expression Set
+ * <p>
  * This generates a regular expression set when given a range
  * or chars. This class handles the simple character class and
  * ranged character classes expressions along with set negation.
@@ -32,7 +33,7 @@ public final class SetExpression implements Expression {
     private Set<Integer> codepoints; // This will be sorted in natural order
     private boolean negated; // Whether this is negated ^ or not @mutable
 
-    SetExpression(boolean negated) {
+    public SetExpression(boolean negated) {
         this.negated = negated;
         this.codepoints = new TreeSet<>();
         this.unicodeClasses = new HashSet<>();
@@ -41,7 +42,7 @@ public final class SetExpression implements Expression {
     /**
      * Negates this set expression
      */
-    void negate() {
+    public void negate() {
         this.negated = true;
     }
 
@@ -53,7 +54,7 @@ public final class SetExpression implements Expression {
      * @param codepointA unicode codepoint from 0x000000
      * @param codepointB unicode codepoint upto 0x10FFFF
      */
-    void addRange(final int codepointA, final int codepointB) {
+    public void addRange(final int codepointA, final int codepointB) {
         if (Character.isValidCodePoint(codepointA) && Character.isValidCodePoint(codepointB)) {
             if (codepointA > codepointB)
                 throw new InvalidCodepointException("character range is out of order");
@@ -73,7 +74,7 @@ public final class SetExpression implements Expression {
      *
      * @param codepoint 0x000000 - 0x10FFFF
      */
-    void addChar(final int codepoint) {
+    public void addChar(final int codepoint) {
         if (!Character.isValidCodePoint(codepoint))
             throw new IllegalArgumentException("invalid codepoint");
         this.codepoints.add(codepoint);
@@ -138,7 +139,7 @@ public final class SetExpression implements Expression {
      */
     public SetExpression withUnicodeClass(final UnicodeScript block, final boolean negated) {
         unicodeClasses.add(
-                Literals.unicodeClass(block, negated)
+                Literals.unicodeScriptLiteral(block, negated)
                         .toRegex().toString()
         );
         return this;
@@ -223,6 +224,13 @@ public final class SetExpression implements Expression {
 
     }
 
+    /**
+     * This function looks at a codepoint and normalizes the character
+     * to be able to interpretable by the regex engine.
+     *
+     * @param codepoint hex
+     * @return normalized string
+     */
     private String toRegexInterpretable(final int codepoint) {
 
         // if the codepoint is a control character then represent them

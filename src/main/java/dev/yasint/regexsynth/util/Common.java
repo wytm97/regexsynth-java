@@ -1,7 +1,9 @@
 package dev.yasint.regexsynth.util;
 
 import com.google.re2j.Pattern;
+import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.exceptions.InvalidGroupNameException;
+import dev.yasint.regexsynth.synthesis.SetExpression;
 
 public final class Common {
 
@@ -64,6 +66,10 @@ public final class Common {
             return character.codePointAt(0);
         }
         return Character.MIN_VALUE;
+    }
+
+    public static boolean isNotASetExpression(final Expression target) {
+        return !(target instanceof SetExpression);
     }
 
 }
