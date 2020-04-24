@@ -1,12 +1,12 @@
 package dev.yasint.regexsynth.dsl;
 
-import dev.yasint.regexsynth.api.Expression;
-import dev.yasint.regexsynth.exceptions.NumericRangeException;
-import dev.yasint.regexsynth.synthesis.RangeExpression;
+        import dev.yasint.regexsynth.api.Expression;
+        import dev.yasint.regexsynth.exceptions.NumericRangeException;
+        import dev.yasint.regexsynth.synthesis.RangeExpression;
 
-import static dev.yasint.regexsynth.api.MetaCharacters.QUESTION_MARK;
-import static dev.yasint.regexsynth.dsl.CharClasses.rangedSet;
-import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
+        import static dev.yasint.regexsynth.api.MetaCharacters.QUESTION_MARK;
+        import static dev.yasint.regexsynth.dsl.CharClasses.rangedSet;
+        import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
 
 public final class Numeric {
 
@@ -20,9 +20,7 @@ public final class Numeric {
     public static Expression leadingZero(final Expression another) {
         // Wrap in non capture group to avoid expression collisions.
         // Insert the leading zero and append the zero or one quantifier
-        return nonCaptureGroup(
-                () -> another.toRegex().insert(0, "0" + QUESTION_MARK)
-        );
+        return nonCaptureGroup(() -> another.toRegex().insert(0, "0" + QUESTION_MARK));
     }
 
     /**

@@ -9,8 +9,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
 import static dev.yasint.regexsynth.api.MetaCharacters.ALTERNATION;
+import static dev.yasint.regexsynth.dsl.Groups.nonCaptureGroup;
 
 public final class Operators {
 

@@ -11,14 +11,14 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  * RE2 regex engine supports.
  *
  * @implNote All are pure functions
- * @since  1.0.0
+ * @since 1.0.0
  */
 public final class Anchors {
 
     /**
      * Inserts a word boundary at position. There are different
      * positions that qualify as a word boundary.
-     *
+     * <p>
      * First, it can be used before the first character in the string,
      * if the first character is a word character. Second, after the
      * last character in the string, if the last character is a word

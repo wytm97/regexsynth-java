@@ -10,7 +10,8 @@ import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
 
 /**
  * Contains all the grouping constructs supported by the
- * RE2 regex engine.
+ * RE2 regex engine. Currently groups with modifiers are
+ * not supported.
  *
  * @implNote All are pure functions
  * @since 1.0.0

@@ -160,6 +160,8 @@ public final class Repetition {
                 .append(QUESTION_MARK);
     }
 
+    // Typed interfaces for checking quantifying errors.
+
     public interface GreedyQuantifier extends Expression { }
 
     public interface ReluctantQuantifier extends Expression { }
