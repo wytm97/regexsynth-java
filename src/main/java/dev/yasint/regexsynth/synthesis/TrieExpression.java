@@ -12,6 +12,7 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  */
 public final class TrieExpression implements Expression {
 
+    private static final String NULL_KEY = "";
     // Initial node of the trie. (null - children)
     private final Node root = new Node();
 
@@ -25,14 +26,14 @@ public final class TrieExpression implements Expression {
     public void insert(final String word) {
         Node current = this.root;
         for (int i = 0; i < word.length(); ++i) {
-            final String c = "" + word.charAt(i);
+            final String c = Character.toString(word.charAt(i));
             if (!current.containsKey(c)) {
                 current.put(c, new Node());
             }
             current = current.get(c);
         }
         // [ "": null ] as terminator
-        current.put("", null);
+        current.put(NULL_KEY, null);
     }
 
     /**
@@ -73,7 +74,7 @@ public final class TrieExpression implements Expression {
         @Override
         public StringBuilder toRegex() {
 
-            if (this.nodes.containsKey("") && this.nodes.size() == 1) {
+            if (this.nodes.containsKey(NULL_KEY) && this.nodes.size() == 1) {
                 return null; // Terminate; final state
             }
 
@@ -104,14 +105,14 @@ public final class TrieExpression implements Expression {
             final boolean hasCharClass = alternations.isEmpty();
             if (charClasses.size() > 0) {
                 if (charClasses.size() == 1) {
-                    alternations.add(charClasses.get(0));
+                    alternations.add(charClasses.get(0)); // [a] => a
                 } else {
                     final StringBuilder set = new StringBuilder();
                     set.append(OPEN_SQUARE_BRACKET);
                     for (final String it : charClasses)
                         set.append(it);
                     set.append(CLOSE_SQUARE_BRACKET);
-                    alternations.add(set.toString());
+                    alternations.add(set.toString()); // [abc]
                 }
             }
 
@@ -132,10 +133,14 @@ public final class TrieExpression implements Expression {
 
             if (hasOptionals) {
                 if (hasCharClass) {
+                    // optional abc?
                     return expression.append(QUESTION_MARK);
                 } else {
-                    expression.insert(0, "" + PAREN_OPEN + QUESTION_MARK + COLON);
-                    expression.append(PAREN_CLOSE).append(QUESTION_MARK);
+                    // a quicker way to insert (?:...)
+                    expression
+                            .insert(0, "" + PAREN_OPEN + QUESTION_MARK + COLON)
+                            .append(PAREN_CLOSE)
+                            .append(QUESTION_MARK);
                     return expression;
                 }
             }

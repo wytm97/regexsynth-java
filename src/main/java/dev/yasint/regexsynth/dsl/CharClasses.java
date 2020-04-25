@@ -49,6 +49,13 @@ public final class CharClasses {
         return set;
     }
 
+    /**
+     * Performs a union operation on two sets
+     *
+     * @param setA source set
+     * @param setB target set
+     * @return result
+     */
     public static Expression union(final Expression setA, final Expression setB) {
         if (isNotASetExpression(setA) || isNotASetExpression(setB)) {
             throw new GenericException("union only supported for set expressions");

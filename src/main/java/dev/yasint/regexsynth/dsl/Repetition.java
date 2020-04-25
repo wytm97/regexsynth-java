@@ -152,7 +152,8 @@ public final class Repetition {
     public static Expression lazy(final Expression expression) {
         if (expression instanceof ReluctantQuantifier) {
             throw new QuantifierException("already marked as lazy");
-        } else if (!(expression instanceof GreedyQuantifier)) {
+        }
+        if (!(expression instanceof GreedyQuantifier)) {
             throw new QuantifierException("must be a greedy quantifier");
         }
         return (ReluctantQuantifier) () -> expression
