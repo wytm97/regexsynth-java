@@ -21,12 +21,13 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  */
 public final class SetExpression implements Expression {
 
-    // Inside a set expression characters such as ^ ] / \ - " ' ` are invalid and
-    // the expression will fail to compile. So, we check each element with this
-    // pattern to escape that are similar. However, ^ no need to escape if it's
-    // not initial (index 0) but we escape it anyways to make the code simpler
-    // to understand.
-    //
+    /**
+     * Inside a set expression characters such as ^ ] / \ - " ' ` are invalid and
+     * the expression will fail to compile. So, we check each element with this
+     * pattern to escape that are similar. However, ^ no need to escape if it's
+     * not initial (index 0) but we escape it anyways to make the code simpler
+     * to understand.
+     */
     private static final Pattern SET_RESTRICTED = Pattern.compile("[\\^\\]\\\\\\/\\-\"'`]");
 
     private Set<String> unicodeClasses; // This is not affected to codepoints. i.e. \P{...} \p{...}
@@ -160,13 +161,23 @@ public final class SetExpression implements Expression {
         final Integer[] chars = codepoints.toArray(new Integer[0]);
 
         // Empty set. (probably after operations) but also check
-        // for unicode character classes.
+        // for unicode character classes. x = {}
         if (chars.length == 0 && unicodeClasses.isEmpty()) {
             return new StringBuilder(0);
         }
 
-        // avoid creating a set expression. instead just
-        // escape the sequence. [a] => a (only if its not negated)
+        // return \p{} or \P if it's only a single non-negated
+        // unicode class. [\p{Arabic}] => \p{Arabic}
+        if (chars.length == 0) {
+            if (unicodeClasses.size() == 1 && !negated) {
+                return new StringBuilder(
+                        unicodeClasses.iterator().next()
+                );
+            }
+        }
+
+        // avoid creating a set expression. instead just escape the
+        // sequence. [a] => a (only if its not negated)
         if (chars.length == 1 && !negated && unicodeClasses.isEmpty()) {
             return new StringBuilder().append(
                     toRegexInterpretable(chars[0])

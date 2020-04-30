@@ -3,6 +3,7 @@ package dev.yasint.regexsynth.examples;
 import com.google.re2j.Pattern;
 import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.api.RegexSynth;
+import dev.yasint.regexsynth.unicode.UnicodeScript;
 import org.junit.jupiter.api.Test;
 
 import java.time.Year;
@@ -35,6 +36,12 @@ public final class ExampleTest {
         // Wrap the expression a higher-order function
         final Expression e = higherOrderFunc(() -> new StringBuilder("Hello "));
         assertEquals(e.toRegex().toString(), "Hello world!"); // yields true
+    }
+
+    @Test
+    public void randomTests() {
+        Expression e = includeUnicodeScript(emptySet(), UnicodeScript.ARABIC, false);
+        System.out.println(e.toRegex());
     }
 
     @Test

@@ -127,8 +127,7 @@ public final class CharClasses {
         final SetExpression set = new SetExpression(false);
         for (final String c : Objects.requireNonNull(characters)) {
             if (c.length() > 2) {
-                // cannot pass long strings or texts to a set! it makes no sense.
-                // and this only accepts valid bmp or astral symbols.
+                // only accepts valid bmp or astral symbols
                 throw new SetElementException("expected bmp or astral codepoint");
             }
             set.addChar(Common.toCodepoint(c));
@@ -145,6 +144,16 @@ public final class CharClasses {
         for (final int c : Objects.requireNonNull(codepoints))
             set.addChar(c);
         return set;
+    }
+
+    /**
+     * Constructs an empty set. This is useful when you only want
+     * to include unicode scripts into a set expression.
+     *
+     * @return empty set expression
+     */
+    public static Expression emptySet() {
+        return new SetExpression(false);
     }
 
     // Pre-defined character classes and escape sequences.
