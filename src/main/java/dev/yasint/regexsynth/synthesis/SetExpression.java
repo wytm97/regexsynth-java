@@ -19,7 +19,7 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  * or chars. This class handles the simple character class and
  * ranged character classes expressions along with set negation.
  */
-public final class SetExpression implements Expression {
+public class SetExpression implements Expression {
 
     /**
      * Inside a set expression characters such as ^ ] / \ - " ' ` are invalid and

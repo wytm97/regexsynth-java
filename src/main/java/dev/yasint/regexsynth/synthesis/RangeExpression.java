@@ -18,7 +18,7 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  * However, the code has some optimizations and changes to match
  * our use-case. `https://bit.ly/3bIXZBy`
  */
-public final class RangeExpression implements Expression {
+public class RangeExpression implements Expression {
 
     private final int _rStart;
     private final int _rEnd;

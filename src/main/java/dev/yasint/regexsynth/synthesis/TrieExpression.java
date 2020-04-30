@@ -10,7 +10,7 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
 /**
  * Synthesis :: String minimization
  */
-public final class TrieExpression implements Expression {
+public class TrieExpression implements Expression {
 
     private static final String NULL_KEY = "";
     // Initial node of the trie. (null - children)
