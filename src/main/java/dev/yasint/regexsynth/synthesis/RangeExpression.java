@@ -9,11 +9,11 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
  * Synthesis :: Regular Expression Integer Range
- *
+ * <p>
  * This generates a regular expression number range given
  * inclusive start and end integers. This implementation's
  * running time is O(log n).
- *
+ * <p>
  * This code is originally based on a StackOverflow post answer.
  * However, the code has some optimizations and changes to match
  * our use-case. `https://bit.ly/3bIXZBy`
@@ -133,9 +133,9 @@ public class RangeExpression implements Expression {
         @Override
         public StringBuilder toRegex() {
 
-            String startStr = String.valueOf(start);
-            String endStr = String.valueOf(end);
-            StringBuilder result = new StringBuilder();
+            final String startStr = String.valueOf(start);
+            final String endStr = String.valueOf(end);
+            final StringBuilder expression = new StringBuilder();
 
             int repeatedCount = 0;
             char previousDigitA = 0, previousDigitB = 0;
@@ -146,7 +146,7 @@ public class RangeExpression implements Expression {
                 char currentDigitB = endStr.charAt(pos);
 
                 if (currentDigitA == currentDigitB) {
-                    result.append(currentDigitA);
+                    expression.append(currentDigitA);
                 } else {
                     // previous is equal to this
                     if (previousDigitA == currentDigitA && previousDigitB == currentDigitB) {
@@ -154,7 +154,7 @@ public class RangeExpression implements Expression {
                         if (!(pos == startStr.length() - 1)) {
                             continue; // if not last
                         } else { // if it is last
-                            result
+                            expression
                                     .append(OPEN_CURLY_BRACE)
                                     .append(++repeatedCount)
                                     .append(CLOSE_CURLY_BRACE);
@@ -162,13 +162,13 @@ public class RangeExpression implements Expression {
                         }
                     }
                     if (repeatedCount > 0) {
-                        result
+                        expression
                                 .append(OPEN_CURLY_BRACE)
                                 .append(repeatedCount)
                                 .append(CLOSE_CURLY_BRACE);
                         repeatedCount = 0;
                     }
-                    result.append(OPEN_SQUARE_BRACKET)
+                    expression.append(OPEN_SQUARE_BRACKET)
                             .append(currentDigitA)
                             .append(currentDigitB - currentDigitA == 1 ? "" : HYPHEN)
                             .append(currentDigitB)
@@ -179,7 +179,7 @@ public class RangeExpression implements Expression {
 
             }
 
-            return result;
+            return expression;
 
         }
 

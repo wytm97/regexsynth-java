@@ -155,39 +155,31 @@ public class SetExpression implements Expression {
     @Override
     public StringBuilder toRegex() {
 
-        // coping the tree set to this set will not change the order.
-        // we need to copy this set's elements to this because we need to
-        // access each element by it's index.
+        // copy the codepoints into a indexed array
         final Integer[] chars = codepoints.toArray(new Integer[0]);
 
-        // Empty set. (probably after operations) but also check
-        // for unicode character classes. x = {}
+        // return nothing if the set is empty
         if (chars.length == 0 && unicodeClasses.isEmpty()) {
             return new StringBuilder(0);
         }
 
-        // return \p{} or \P if it's only a single non-negated
-        // unicode class. [\p{Arabic}] => \p{Arabic}
+        // return only the unicode script class if it's a singleton
         if (chars.length == 0) {
             if (unicodeClasses.size() == 1 && !negated) {
-                return new StringBuilder(
-                        unicodeClasses.iterator().next()
-                );
+                return new StringBuilder(unicodeClasses.iterator().next());
             }
         }
 
-        // avoid creating a set expression. instead just escape the
-        // sequence. [a] => a (only if its not negated)
+        // avoid creating a set expression. instead just escape the sequence.
+        // [a] => a (only if its not negated)
         if (chars.length == 1 && !negated && unicodeClasses.isEmpty()) {
-            return new StringBuilder().append(
-                    toRegexInterpretable(chars[0])
-            );
+            return new StringBuilder().append(toRegexInterpretable(chars[0]));
         }
 
         // we use a string-builder to construct the set expression iteratively.
         final StringBuilder expression = new StringBuilder();
-        expression.append(OPEN_SQUARE_BRACKET);
-        if (negated) expression.append(CARAT);
+        expression.append(OPEN_SQUARE_BRACKET); // open bracket
+        if (negated) expression.append(CARAT); // append carat if negated
 
         int rangeStartIndex = -1;
         boolean isInRange = false;
@@ -196,7 +188,7 @@ public class SetExpression implements Expression {
             // Check if this can be a range
             if (curIndex + 1 < chars.length) {
                 if (chars[curIndex + 1] - chars[curIndex] == 1) {
-                    if (!isInRange) {
+                    if (!isInRange) { // if this is the start
                         rangeStartIndex = curIndex;
                         isInRange = true;
                     }
@@ -226,9 +218,7 @@ public class SetExpression implements Expression {
 
         // Now we can append the unicode char classes if the user specified any.
         if (unicodeClasses.size() > 0) {
-            for (String klass : unicodeClasses) {
-                expression.append(klass);
-            }
+            for (String klass : unicodeClasses) expression.append(klass);
         }
 
         return expression.append(CLOSE_SQUARE_BRACKET);

@@ -39,7 +39,7 @@ public final class Numeric {
             return Literals.literal(String.valueOf(from));
         if (from >= 0 && to <= 9)
             return rangedSet(String.valueOf(from), String.valueOf(to));
-        return nonCaptureGroup(() -> new RangeExpression(from, to).toRegex());
+        return nonCaptureGroup(new RangeExpression(from, to));
     }
 
 }
