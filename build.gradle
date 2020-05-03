@@ -18,7 +18,7 @@ apply plugin: 'com.bmuschko.nexus'
 // Metadata Definition and Upload
 group = 'dev.yasint'
 archivesBaseName = "regexsynth"
-version = '1.0.3'
+version = '1.0.4'
 
 // RegexSynth supports Java 8
 sourceCompatibility = 1.8
