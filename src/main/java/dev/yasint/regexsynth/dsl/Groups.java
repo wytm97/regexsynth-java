@@ -13,7 +13,6 @@ import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
  * RE2 regex engine. Currently groups with modifiers are
  * not supported.
  *
- * @implNote All are pure functions
  * @since 1.0.0
  */
 public final class Groups {

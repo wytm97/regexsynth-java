@@ -10,7 +10,6 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  * This class contains all the anchors/boundary matchers that
  * RE2 regex engine supports.
  *
- * @implNote All are pure functions
  * @since 1.0.0
  */
 public final class Anchors {
