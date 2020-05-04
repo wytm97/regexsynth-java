@@ -22,8 +22,8 @@ public final class CharClasses {
 
     /**
      * Matches any character, possibly including newline \n if
-     * the 's' {@link dev.yasint.regexsynth.api.RegexSynth.Flags}
-     * DOTALL flag is turned on.
+     * the 's' {@link dev.yasint.regexsynth.api.RegexSynth.Flags#DOTALL}
+     * flag is turned on.
      *
      * @return match anything
      */

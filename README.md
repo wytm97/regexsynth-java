@@ -12,18 +12,18 @@ If you're using `Maven`, you can use the following snippet in your `pom.xml` fil
 <dependency>
   <groupId>dev.yasint</groupId>
   <artifactId>regexsynth</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
 If you're using `Gradle`, you can use the following snippet in your `build.gradle` file to get RegexSynth:
 
 ```groovy
-implementation 'dev.yasint:regexsynth:1.0.3' // Groovy DSL
+implementation 'dev.yasint:regexsynth:1.0.4' // Groovy DSL
 ```
 
 ```kotlin
-implementation("dev.yasint:regexsynth:1.0.3") // Kotlin DSL
+implementation("dev.yasint:regexsynth:1.0.4") // Kotlin DSL
 ```
 
 You can use the same artifact details in any build system compatible with the Maven Central repositories (e.g. sbt, Ivy, leiningen, bazel, purl, badge, buildr, grape). Visit the [repo on Maven Central](https://search.maven.org/artifact/dev.yasint/regexsynth) .
@@ -52,13 +52,11 @@ However, one of the major problem of these libraries is that they fail to struct
 // Requirement 3: Extract month and day
 //
 // Note: dates can have a leading zero 01, 02, 03, etc...
-
-String[] months = new String[]{
+final String[] months = new String[]{
         "Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
-
-String expression = regexp(
+final Pattern expression = new RegexSynth(
         exactLineMatch( // Enclosed in ^...$
                 integerRange(2012, Year.now().getValue()), // Year
                 literal("-"), // Delimiter
@@ -66,67 +64,47 @@ String expression = regexp(
                 literal("-"), // Delimiter
                 captureGroup(leadingZero(integerRange(1, 31))) // Day - group 2
         )
-);
+).compile(
+        // You can pass optional modifiers here...
+).getPattern();
 ```
 
 ```reStructuredText
-^(?:2020|201[2-9])\-((?:A(?:pr|ug)|Dec|Feb|J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\-((?:0?(?:3[0-1]|[1-2][0-9]|[1-9])))$
+^(?:2020|201[2-9])\-((?:A(?:pr|ug)|Dec|Feb|J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\-((?:0?(?:3[01]|[12][0-9]|[1-9])))$
 ```
-
-
 
 ###### Example #2 (Partial Expression Segregation)
 
 ```java
-
-// Protocol matching expression
-Expression protocol = namedCaptureGroup("protocol",
-        either("http", "https", "ftp")
+// Protocol segment
+Expression protocol = namedCaptureGroup("protocol", either("http", "https", "ftp"));
+// Sub-domain
+Expression sub_domain = namedCaptureGroup("subDomain", oneOrMoreTimes(
+        union(alphanumeric(), simpleSet("-", ".")))
 );
+// Top-level-domain
+Expression tld = namedCaptureGroup("tld", between(2, 4, alphabetic()));
+// Port if exists
+Expression port = optional(namedCaptureGroup("port", literal(":"), integerRange(1, 65535)));
+// Resource part
+Expression resource = namedCaptureGroup("resource", zeroOrMoreTimes(anything()));
 
-// Sub-domain matching expression. i.e. www.google, dev-console.firebase
-Expression sub_domain = namedCaptureGroup("subDomain",
-        oneOrMoreTimes(
-                alphanumeric().union(simpleSet("-", "."))
-        )
-);
-
-// TLD matching expression
-Expression tld = namedCaptureGroup("tld",
-        between(2, 4, alphabetic()) // 2-4 chars
-);
-
-// port matching expression (optional ?)
-Expression port = optional(
-        namedCaptureGroup("port",
-                literal(":"), oneOrMoreTimes(digit())
-        )
-);
-
-// Resource matching expression
-Expression resource = namedCaptureGroup("resource",
-        zeroOrMoreTimes(anything())
-);
-
-// Combine all segregated partial expressions
-String expression = regexp(
+// Combine all isolated partial expressions
+final Pattern expression = new RegexSynth(
         exactLineMatch(
                 protocol, literal("://"), sub_domain, literal("."), tld,
                 port, optional(literal("/")), resource
         )
-);
-
-// Compile the expression. Will return a com.google.re2j.Pattern instance.
-Pattern pattern = RegexSynth.compile(expression, RegexSynth.Flags.MULTILINE);
+).compile().getPattern();
 ```
 
 ```reStructuredText
-^(?P<protocol>(?:ftp|https?)):\/\/(?P<subDomain>[\-.0-9A-Za-z]+)\.(?P<tld>[A-Za-z]{2,4})(?P<port>:[0-9]+)?\/?(?P<resource>.*)$
+^(?P<protocol>(?:ftp|https?)):\/\/(?P<subDomain>(?:[\-.0-9A-Za-z])+)\.(?P<tld>(?:[A-Za-z]){2,4})(?:(?P<port>:(?:6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[1-9][0-9]{3}|[1-9][0-9]{2}|[1-9][0-9]|[1-9])))?(?:\/)?(?P<resource>(?:.)*)$
 ```
 
 # **Design & Architecture**
 
-RegexSynth has a simple yet an elegant architecture where all the [regular expression constructs](https://github.com/wytm97/regexsynth-java/wiki/Documentation) share the same functional interface `Expression`. It allows us to declare and combine any type of expression and wrap expressions on top of expressions. This produces an explicit function driven [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) for the regex, which is then transpiled to a RE2 interpretable regular expression.
+RegexSynth has a simple yet an elegant architecture where all the [regular expression constructs](https://github.com/wytm97/regexsynth-java/wiki/Documentation) share the same functional interface `Expression`. It allows us to declare and combine any type of expression and wrap expressions on top of expressions. This produces an explicit higher-order function driven [Abstract Syntax Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST) for the regex, which is then transpiled to a RE2 interpretable regular expression.
 
 ```java
 @FunctionalInterface
@@ -142,8 +120,6 @@ public interface Expression {
 }
 ```
 
-It is possible to do [contextual analysis](https://en.wikipedia.org/wiki/Semantic_analysis_(compilers)) directly inside defined [lambda functions](https://en.wikipedia.org/wiki/Anonymous_function) to validate the structure of the created regular expression. For example, we can use object decomposition like `interface BoundaryMatcher extends Expression { }` to check syntactical errors similar to `\b\b\b` (less likely or invalid syntax) but, it is beyond this project's current scope and research (Maybe in a future release we will do this) and, it is a more object oriented approach.
-
 # **Reusing Expressions**
 
 RegexSynth allows you to define custom expressions to create reusable expressions. For example, `RegexSet ` and `IntegerRange` are reusable components inside regexsynth. Likewise you can define your own expressions and reuse them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
@@ -151,6 +127,7 @@ RegexSynth allows you to define custom expressions to create reusable expression
 ```java
 import java.time.Year;
 import dev.yasint.regexsynth.api.Expression;
+import dev.yasint.regexsynth.api.RegexSynth;
 // import other nececessary lambda function literals
 
 public class ISODateFormat implements Expression {
@@ -179,17 +156,13 @@ public class ISODateFormat implements Expression {
 
 // Reuse the regex in multiple expressions.
 public static void main(String[] args) {
-    final String expression = regexp(
+    final String expression = new RegexSynth(
             new ISODateFormat(2010, Year.now().getValue()),
             literal(":"),
             ...
-    );
+    ).compile().getExpression();
 }
 ```
-
-# **Future Work**
-
-// TODO
 
 # **Documentation**
 
@@ -197,9 +170,7 @@ You can find the library documentation on this github's [Wiki](https://github.co
 
 # **Other Implmentations**
 
-// TODO
-
-
+Currently RegexSynth only supports Java. But it is possible to port the framework into other languages because [RE2](https://github.com/google/re2) has support for all major languages. It'll be really awesome if you would like to contribute to another port.
 
 
 

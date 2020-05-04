@@ -142,7 +142,9 @@ public final class ExampleTest {
     public void urlMatchingExample() {
 
         Expression protocol = namedCaptureGroup("protocol", either("http", "https", "ftp"));
-        Expression sub_domain = namedCaptureGroup("subDomain", oneOrMoreTimes(union(alphanumeric(), simpleSet("-", "."))));
+        Expression sub_domain = namedCaptureGroup("subDomain", oneOrMoreTimes(
+                union(alphanumeric(), simpleSet("-", ".")))
+        );
         Expression tld = namedCaptureGroup("tld", between(2, 4, alphabetic()));
         Expression port = optional(namedCaptureGroup("port", literal(":"), integerRange(1, 65535)));
         Expression resource = namedCaptureGroup("resource", zeroOrMoreTimes(anything()));

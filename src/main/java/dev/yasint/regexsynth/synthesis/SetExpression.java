@@ -243,7 +243,7 @@ public class SetExpression implements Expression {
         if (Character.isISOControl(codepoint)) {
             // RE2 only accepts \x00 style. It does not allow \x0
             // syntax. So, below formatter formats a codepoint to
-            // its 2digit hex value.
+            // its 2-digit hex value.
             return String.format("\\x%02X", codepoint);
         }
 
@@ -259,7 +259,8 @@ public class SetExpression implements Expression {
 
         // if it's bmp codepoint (such codepoints can be stored in
         // single 16bit char in java) and it's a set restricted
-        // then just escape it with a backslash.
+        // then just escape it with a backslash. Note that this only
+        // returns escaped characters.
         //
         if (Character.isBmpCodePoint(codepoint)) {
             final String c = Character.toString((char) codepoint);
