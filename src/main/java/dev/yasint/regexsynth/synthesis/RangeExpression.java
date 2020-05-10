@@ -13,10 +13,6 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  * This generates a regular expression number range given
  * inclusive start and end integers. This implementation's
  * running time is O(log n).
- * <p>
- * This code is originally based on a StackOverflow post answer.
- * However, the code has some optimizations and changes to match
- * our use-case. `https://bit.ly/3bIXZBy`
  */
 public class RangeExpression implements Expression {
 
