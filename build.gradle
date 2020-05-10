@@ -13,7 +13,7 @@ plugins {
 }
 
 apply plugin: 'com.bmuschko.nexus'
-// apply plugin: 'jacoco'
+apply plugin: 'jacoco'
 
 // Metadata Definition and Upload
 group = 'dev.yasint'
@@ -80,17 +80,17 @@ nexusStaging {
     // stagingProfileId = "yourStagingProfileId" // when not defined will be got from server using "packageGroup"
 }
 
-//jacocoTestReport {
-//    group = "test-coverage-reporting"
-//    description = "Generate Jacoco coverage reports after running tests."
-//    reports {
-//        xml.enabled = true
-//        html.enabled = true
-//    }
-//    sourceDirectories = fileTree(dir: 'src/main/dev.yasint.regexsynth')
-//}
+jacocoTestReport {
+    group = "test-coverage-reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+    sourceDirectories = fileTree(dir: 'src/main/dev.yasint.regexsynth')
+}
 
-//check.dependsOn jacocoTestReport
+check.dependsOn jacocoTestReport
 
 test {
     // Enable JUnit 5 (Gradle 4.6+).

@@ -50,29 +50,30 @@ public final class ExampleTest {
         // Matches dates in range 2010-1-1 to 2020-12-31,
         // has a space delimiter, and matches any string in the set
         // {SO, SSE, PE, PA, SS}, has a space delimiter, matches a number
-        // in range 58499 to 68599, has a space delimiter, one or more digit
+        // in range 58499 to 68599, has a space delimiter, 100 to 500 item stock
 
         // Example of how to segregate complex regular expressions
-        // into more simpler format. So it's easy to debug and read.
+        // into more simpler format. So it's easy to debug, test, and read.
 
         final Expression DATE = captureGroup(
                 integerRange(2010, 2020), literal("-"),
                 leadingZero(integerRange(1, 12)), literal("-"),
                 leadingZero(integerRange(1, 31))
         );
-        final Expression DEPT_CODE = captureGroup(either("SO", "SS", "PE", "PA", "SSE"));
-        final Expression ITEM_CODE = captureGroup(integerRange(58499, 68599));
-        final Expression ITEM_S_COUNT = captureGroup(oneOrMoreTimes(digit()));
-        final Expression DELIMITER = space();
+        final Expression DEPT_CODE = captureGroup(either("SO", "SS", "PE", "PA", "SSE")); // Department code
+        final Expression ITEM_CODE = captureGroup(integerRange(58499, 68599)); // Item code
+        final Expression ITEM_S_COUNT = captureGroup(integerRange(100, 500)); // Item stock count
+        final Expression DELIMITER = space(); // Delimiter
 
+        // Compose all the segregated expressions into one
         final Pattern pattern = new RegexSynth(
                 DATE, DELIMITER, DEPT_CODE, DELIMITER,
                 ITEM_CODE, DELIMITER, ITEM_S_COUNT
         ).compile().getPattern();
 
-        assertEquals(pattern.pattern(), "((?:2020|201[0-9])\\-(?:0?(?:1[0-2]|[1-9]))\\-(?:0?(?:3[01]|[12]" +
-                "[0-9]|[1-9]))) ((?:P[AE]|S(?:SE?|O))) ((?:68[0-5][0-9]{2}|6[0-7][0-9]{3}|59[0-9]{3}|58[5-9]" +
-                "[0-9]{2}|58499)) ((?:[0-9])+)");
+        assertEquals(pattern.pattern(), "((?:2020|201[0-9])\\-(?:0?(?:1[0-2]|[1-9]))\\-(?:0?(?:3[01]" +
+                "|[12][0-9]|[1-9]))) ((?:P[AE]|S(?:SE?|O))) ((?:68[0-5][0-9]{2}|6[0-7][0-9]{3}|59[0-9]" +
+                "{3}|58[5-9][0-9]{2}|58499)) ((?:500|[1-4][0-9]{2}))");
 
     }
 

@@ -38,7 +38,7 @@ Let's say you have been assgined to a new project and been asked to figure out w
 
 # **Declarative Syntax**
 
-RegexSynth provides a declarative syntax for regular expressions creation. You specify what you want and it builds the target regular expression with the correct syntax. This is not new, because there are many regex builder *libraries* and *tools* out there that can construct regular expressions without explicitly specifying the syntax. For example, [VerbalExpressions](https://github.com/VerbalExpressions), [JS-Regex](https://github.com/wyantb/js-regex), [SimpleRegex](https://github.com/SimpleRegex) etc.
+RegexSynth provides a declarative syntax (an internal domain-specific language {DSL}) for regular expressions creation. You specify what you want and it builds the target regular expression with the correct syntax. This is not new, because there are many regex builder *libraries* and *tools* out there that can construct regular expressions without explicitly specifying the syntax. For example, [VerbalExpressions](https://github.com/VerbalExpressions), [JS-Regex](https://github.com/wyantb/js-regex), [SimpleRegex](https://github.com/SimpleRegex) etc.
 
 However, one of the major problem of these libraries is that they fail to structure the expression as it intended. The structure of a regular expression matters alot. If not handled correclty it can be a added complexity in your code. This is where RegexSynth comes into play. RegexSynth allows you to **destructure** your expression into partial expressions and then combine them to create a complete regular expression.
 
