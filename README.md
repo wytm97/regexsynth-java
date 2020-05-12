@@ -122,7 +122,7 @@ public interface Expression {
 
 # **Reusing Expressions**
 
-RegexSynth allows you to define custom expressions to create reusable expressions. For example, `RegexSet ` and `IntegerRange` are reusable components inside regexsynth. Likewise you can define your own expressions and reuse them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
+RegexSynth allows you to define custom expressions to create reusable expressions. For example, `SetExpression` and `RangeExpression` are reusable components inside regexsynth. Likewise you can define your own expressions and reuse them accross multiple patterns. This way we can write more `clean` and `maintainable` regular expression codes.
 
 ```java
 import java.time.Year;
