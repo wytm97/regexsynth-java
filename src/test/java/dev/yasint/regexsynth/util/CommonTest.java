@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import static dev.yasint.regexsynth.util.Common.asRegexGroupName;
 import static dev.yasint.regexsynth.util.Common.asRegexLiteral;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class CommonTest {
 
@@ -31,6 +32,15 @@ public final class CommonTest {
         assertEquals(asRegexLiteral("."), "\\.");
         assertEquals(asRegexLiteral(">"), "\\>");
         assertEquals(asRegexLiteral("/"), "\\/");
+    }
+
+    @Test
+    public void itShouldEscapeAllTheSpecialCharsAndEscapeSupplementaryCodepoints() {
+        String someString = "Hi, this is developed by // Yazeen. 🌚💀|{}";
+        assertEquals(
+                asRegexLiteral(someString),
+                "Hi, this is developed by \\/\\/ Yazeen\\. \\x{1f31a}\\x{1f480}\\|\\{\\}"
+        );
     }
 
     @Test

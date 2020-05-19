@@ -5,6 +5,8 @@ import dev.yasint.regexsynth.api.Expression;
 import dev.yasint.regexsynth.exceptions.InvalidGroupNameException;
 import dev.yasint.regexsynth.synthesis.SetExpression;
 
+import static dev.yasint.regexsynth.api.MetaCharacters.BACKSLASH;
+
 public final class Common {
 
     // This regular expression checks whether the capture group name
@@ -24,19 +26,28 @@ public final class Common {
     // Utility methods
 
     /**
-     * Escapes all the special regex constructs. {@code VALID_GROUP_NAME}
+     * Escapes all the special regex constructs. {@code RESERVED}
      * i.e. <code>https://</code> will transform to <code>https:\/\/</code>
      *
      * @param someString string to escape
      * @return escaped strings
      */
     public static String asRegexLiteral(final String someString) {
-        int codepoint = toCodepoint(someString);
-        if (Character.isSupplementaryCodePoint(codepoint)) {
-            return String.format("\\x{%s}", Integer.toHexString(codepoint));
+        if (someString.length() == 1) { // quickly return if its only 1 char
+            return RESERVED.matcher(someString).replaceAll("\\\\$0");
         }
-        return RESERVED.matcher(someString).replaceAll("\\\\$0");
-
+        final StringBuilder composed = new StringBuilder();
+        for (int i = 0; i < someString.toCharArray().length; i++) {
+            int codepoint = someString.codePointAt(i); // always returns a complete codepoint
+            if (Character.isSupplementaryCodePoint(codepoint)) {
+                composed.append(String.format("\\x{%s}", Integer.toHexString(codepoint)));
+                i++; // Skip the next character because it's an high-surrogate
+            } else { // definitely an BMP codepoint character
+                String val = String.valueOf(someString.charAt(i));
+                composed.append(RESERVED.matches(val) ? BACKSLASH : "").append(val);
+            }
+        }
+        return composed.toString();
     }
 
     /**
