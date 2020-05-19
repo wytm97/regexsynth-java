@@ -20,14 +20,4 @@ public final class RangeExpressionTest {
         }
     }
 
-    @Test
-    public void itShouldReturn100to1000Range() {
-
-        RangeExpression e = new RangeExpression(1, 999);
-        StringBuilder builder = e.toRegex();
-        System.out.println(builder);
-
-
-    }
-
 }
