@@ -130,9 +130,7 @@ public final class ExampleTest {
                         literal("-"), // Delimiter
                         captureGroup(leadingZero(integerRange(1, 31))) // Day - group 2
                 )
-        ).compile(
-                // You can pass optional modifiers here...
-        ).getPattern();
+        ).compile().getPattern();
 
         assertEquals(expression.pattern(), "^(?:2020|201[2-9])\\-((?:A(?:pr|ug)|Dec|Feb|" +
                 "J(?:an|u[ln])|Ma[ry]|Nov|Oct|Sep))\\-((?:0?(?:3[01]|[12][0-9]|[1-9])))$");
@@ -166,10 +164,8 @@ public final class ExampleTest {
 
     @Test
     public void doubleNumberMatchingExample() {
-
         // let's say we need to match all the double numbers
         // from 0.000 to 1000.999 with three fraction digits
-
         Pattern pattern = new RegexSynth(
                 exactWordBoundary(
                         integerRange(0, 1000),
@@ -177,9 +173,6 @@ public final class ExampleTest {
                         between(1, 3, digit())
                 )
         ).compile().getPattern();
-
-        System.out.println(pattern.pattern());
-
     }
 
 }

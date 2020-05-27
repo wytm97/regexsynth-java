@@ -9,7 +9,7 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
 
 /**
  * Synthesis :: Regular Expression Integer Range
- * <p>
+ *
  * This generates a regular expression number range given
  * inclusive start and end integers. This implementation's
  * running time is O(log n).
@@ -30,6 +30,13 @@ public class RangeExpression implements Expression {
         this._rEnd = _rEnd;
     }
 
+    /**
+     * Marks the left boundaries from the range start
+     *
+     * @param start int range
+     * @param end   int range
+     * @return left boundaries
+     */
     private static LinkedList<Range> leftBounds(int start, int end) {
         final LinkedList<Range> result = new LinkedList<>();
         while (start < end) {
@@ -40,6 +47,13 @@ public class RangeExpression implements Expression {
         return result;
     }
 
+    /**
+     * Marks the right boundaries from the range end
+     *
+     * @param start int range
+     * @param end   int range
+     * @return right boundaries
+     */
     private static LinkedList<Range> rightBounds(int start, int end) {
         final LinkedList<Range> result = new LinkedList<>();
         while (start < end) {
@@ -54,13 +68,13 @@ public class RangeExpression implements Expression {
     @Override
     public StringBuilder toRegex() {
 
-        LinkedList<Range> left = leftBounds(_rStart, _rEnd);
-        Range lastLeft = left.removeLast();
-        LinkedList<Range> right = rightBounds(lastLeft.start, _rEnd);
-        Range firstRight = right.removeFirst();
+        final LinkedList<Range> left = leftBounds(_rStart, _rEnd);
+        final Range lastLeft = left.removeLast();
+        final LinkedList<Range> right = rightBounds(lastLeft.start, _rEnd);
+        final Range firstRight = right.removeFirst();
 
         // Merge all classes
-        LinkedList<Range> merged = new LinkedList<>(left);
+        final LinkedList<Range> merged = new LinkedList<>(left);
         if (!lastLeft.overlaps(firstRight)) {
             merged.add(lastLeft);
             merged.add(firstRight);
@@ -82,16 +96,28 @@ public class RangeExpression implements Expression {
 
     }
 
+    /**
+     * DynamicRange Expression
+     */
     private static final class Range implements Expression {
 
-        private int start;
-        private int end;
+        final private StringBuilder expression;
+        final private int start;
+        final private int end;
 
         private Range(int start, int end) {
             this.start = start;
             this.end = end;
+            this.expression = new StringBuilder();
         }
 
+        /**
+         * Creates a range from the end int by setting the set
+         * min range for digit.
+         *
+         * @param end int range
+         * @return range with new start/end
+         */
         private static Range fromEnd(int end) {
             final char[] chars = String.valueOf(end).toCharArray();
             for (int i = chars.length - 1; i >= 0; i--) {
@@ -105,6 +131,13 @@ public class RangeExpression implements Expression {
             return new Range(Integer.parseInt(String.valueOf(chars)), end);
         }
 
+        /**
+         * Creates a range from the start int by setting the set
+         * max range for digit.
+         *
+         * @param start int range
+         * @return range with new start/end
+         */
         private static Range fromStart(int start) {
             final char[] chars = String.valueOf(start).toCharArray();
             for (int i = chars.length - 1; i >= 0; i--) {
@@ -118,11 +151,27 @@ public class RangeExpression implements Expression {
             return new Range(start, Integer.parseInt(String.valueOf(chars)));
         }
 
+        /**
+         * Joins two dynamic ranges together
+         *
+         * @param a left range
+         * @param b right range
+         * @return merged range
+         */
         private static Range join(Range a, Range b) {
+            // Simply just join two ranges
             return new Range(a.start, b.end);
         }
 
+        /**
+         * Checks whether two ranges overlaps together
+         * cannot be [0-9][0-9]
+         *
+         * @param r target range
+         * @return whether it's overlapping or not
+         */
         private boolean overlaps(final Range r) {
+            // Checks whether current range overlaps the previous range
             return this.end > r.start && r.end > this.start;
         }
 
@@ -131,8 +180,6 @@ public class RangeExpression implements Expression {
 
             final String startStr = String.valueOf(start);
             final String endStr = String.valueOf(end);
-            final StringBuilder expression = new StringBuilder();
-
             int repeatedCount = 0;
             char previousDigitA = 0, previousDigitB = 0;
 
@@ -172,17 +219,15 @@ public class RangeExpression implements Expression {
                     previousDigitA = currentDigitA;
                     previousDigitB = currentDigitB;
                 }
-
             }
-
             return expression;
 
         }
 
         @Override
         public String toString() {
-            return String.format(
-                    "RangeGen { start=%d, end=%d }",
+            // debug only
+            return String.format("RangeGen { start=%d, end=%d }",
                     start, end
             );
         }
