@@ -12,9 +12,8 @@ import static dev.yasint.regexsynth.api.MetaCharacters.*;
  */
 public class TrieExpression implements Expression {
 
-    private static final String NULL_KEY = "";
-    // Initial node of the trie. (null - children)
-    private final Node root = new Node();
+    private static final String NULL_KEY = ""; // Null key represents an empty string
+    private final Node root = new Node(); // Initial node of the trie. (null - children)
 
     public TrieExpression() { /*available for testing*/ }
 
@@ -54,34 +53,52 @@ public class TrieExpression implements Expression {
     private static final class Node implements Expression {
 
         private final Map<String, Node> nodes;
+        private final List<String> alternations;
+        private final List<String> charClasses;
+
+        private boolean hasOptionals = false;
+        private boolean hasCharacterClasses = false;
 
         private Node() {
             this.nodes = new TreeMap<>();
+            this.alternations = new ArrayList<>();
+            this.charClasses = new ArrayList<>();
         }
 
-        private boolean containsKey(final String key) {
-            return this.nodes.containsKey(key);
+        /**
+         * Checks whether a given key is present in this
+         * leaf node of the trie.
+         *
+         * @param _char rune / character
+         * @return true if present
+         */
+        private boolean containsKey(final String _char) {
+            return this.nodes.containsKey(_char);
         }
 
-        private void put(final String c, final Node node) {
-            this.nodes.put(c, node);
+        /**
+         * Inserts a given key and a child node to this
+         * leaf node's children {@code nodes}
+         *
+         * @param _char key / rune / character
+         * @param node  child node
+         */
+        private void put(final String _char, final Node node) {
+            this.nodes.put(_char, node);
         }
 
+        /**
+         * Retrieves a child node from this leaf node of trie
+         * when given the key.
+         *
+         * @param _char key of the child node
+         * @return mapping child node
+         */
         private Node get(final String _char) {
             return this.nodes.get(_char);
         }
 
-        @Override
-        public StringBuilder toRegex() {
-
-            if (this.nodes.containsKey(NULL_KEY) && this.nodes.size() == 1) {
-                return null; // Terminate; final state
-            }
-
-            final List<String> alternations = new ArrayList<>();
-            final List<String> charClasses = new ArrayList<>();
-
-            boolean hasOptionals = false;
+        private void synthesizeStringAlternations() {
             // for each leaf node of this node (adjacent nodes)
             for (Map.Entry<String, Node> entry : this.nodes.entrySet()) {
                 // escape any special regular expression constructs is present
@@ -98,11 +115,13 @@ public class TrieExpression implements Expression {
                         charClasses.add(escaped);
                     }
                 } else {
-                    hasOptionals = true;
+                    this.hasOptionals = true;
                 }
             }
+        }
 
-            final boolean hasCharClass = alternations.isEmpty();
+        private void synthesizeCharacterClasses() {
+            this.hasCharacterClasses = alternations.isEmpty();
             if (charClasses.size() > 0) {
                 if (charClasses.size() == 1) {
                     alternations.add(charClasses.get(0)); // [a] => a
@@ -115,6 +134,16 @@ public class TrieExpression implements Expression {
                     alternations.add(set.toString()); // [abc]
                 }
             }
+        }
+
+        @Override
+        public StringBuilder toRegex() {
+
+            if (this.nodes.containsKey(NULL_KEY) && this.nodes.size() == 1) {
+                return null; // Terminate; final state, means this is an null edge
+            }
+            this.synthesizeStringAlternations();
+            this.synthesizeCharacterClasses();
 
             final StringBuilder expression = new StringBuilder();
 
@@ -131,8 +160,8 @@ public class TrieExpression implements Expression {
                 expression.append(PAREN_CLOSE);
             }
 
-            if (hasOptionals) {
-                if (hasCharClass) {
+            if (this.hasOptionals) {
+                if (this.hasCharacterClasses) {
                     // optional abc?
                     return expression.append(QUESTION_MARK);
                 } else {
