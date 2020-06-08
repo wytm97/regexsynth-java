@@ -13,8 +13,7 @@ import static dev.yasint.regexsynth.dsl.Anchors.exactWordBoundary;
 import static dev.yasint.regexsynth.dsl.CharClasses.EscapeSequences.space;
 import static dev.yasint.regexsynth.dsl.CharClasses.Posix.*;
 import static dev.yasint.regexsynth.dsl.CharClasses.*;
-import static dev.yasint.regexsynth.dsl.Groups.captureGroup;
-import static dev.yasint.regexsynth.dsl.Groups.namedCaptureGroup;
+import static dev.yasint.regexsynth.dsl.Groups.*;
 import static dev.yasint.regexsynth.dsl.Literals.literal;
 import static dev.yasint.regexsynth.dsl.Numeric.integerRange;
 import static dev.yasint.regexsynth.dsl.Numeric.leadingZero;
@@ -173,6 +172,38 @@ public final class ExampleTest {
                         between(1, 3, digit())
                 )
         ).compile().getPattern();
+    }
+
+    @Test
+    public void cssColorMatchingExample() {
+
+        // rgb(255,0,24), rgb(255, 0, 24), rgba(255, 0, 24, .5)
+
+        Expression delimiter = nonCaptureGroup(
+                literal(","), optional(space())
+        );
+        Expression codeRange = integerRange(0, 255);
+        Expression alpha = nonCaptureGroup(
+                delimiter, // <comma><space> after rgb
+                optional(literal("0")), // optional zero
+                literal("."), // decimal point
+                between(1, 5, digit()) // Max 5 fraction digits
+        );
+
+        Pattern rgbaExpression = new RegexSynth(
+                namedCaptureGroup("rbg_color",
+                        either("rgb", "rgba"),
+                        literal("("),
+                        codeRange, delimiter, // R
+                        codeRange, delimiter, // G
+                        codeRange, // B
+                        optional(alpha),
+                        literal(")")
+                )
+        ).compile().getPattern();
+
+        System.out.println(rgbaExpression.pattern());
+
     }
 
 }
